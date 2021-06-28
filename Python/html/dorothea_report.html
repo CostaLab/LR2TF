@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{{ title }} </title>
+    <link rel="stylesheet" type="text/css" href="html/style.css"/>
+    <style type="text/css">
+        .plotimage { width:90%;}
+    </style>
+</head>
+<body>
+<div class="container">
+    {% for condition in conditions %}
+        <h2>Cluster and DoRothEA Results for {{condition}} Condition</h2>
+        <h3>Cluster</h3>
+        <p>Dedected cell cluster</p>
+        <image class="plotimage" src={{overview_data[condition][7]}} ></image>
+        <h3>TF activity</h3>
+        <p>Cell cluster by TF activity</p>
+        <image class="plotimage" src={{overview_data[condition][8]}} ></image>
+        <p>Top 20 most variable TFs</p>
+        <image class="plotimage" src={{overview_data[condition][9]}} ></image>
+        <h2>TF to ligand results</h2>
+        <h3>Overview</h3>
+        <ul>
+            <li>Number of cell types: {{overview_data[condition][0]}}</li>
+            <li>Number of active TFs: {{overview_data[condition][1]}}</li>
+            <li>Number of expressed target genes: {{overview_data[condition][4]}}</li>
+            <li>Number of expressed ligand encoding genes: {{overview_data[condition][5]}}</li>
+        </ul>
+
+        <h3>Results by cell type</h3>
+        {% for cell in cell_data[condition] %}
+            <h4>{{cell.cell_type}}</h4>
+            <ul>
+                <li>Number of active TFs: {{cell.active_tfs}}</li>
+                <li>Number of expressed target genes: {{cell.expressed_targets}}</li>
+                <li>Number of expressed ligand encoding genes: {{cell.expressed_ligands}}</li>
+            </ul>
+            <a href={{cell.file_name}}>{{cell.cell_type}} csv file</a>
+            <h5>Table: Results for each by DoRothEA detected active TF</h5>
+             {{ cell.tf_data }}
+            {% if cell.cell_type!=overview_data[condition][6] %}
+                 <div style="page-break-before: always;"></div>
+            {% endif %}
+        {% endfor %}
+
+        {% if condition!=conditions[-1] %}
+                 <div style="page-break-before: always;"></div>
+        {% endif %}
+    {% endfor %}
+</div>
+</body>
+</html>
