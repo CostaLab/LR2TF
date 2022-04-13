@@ -38,3 +38,8 @@ Thumbs.db
 
 .idea
 
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
