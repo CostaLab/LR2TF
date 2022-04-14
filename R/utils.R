@@ -1,0 +1,276 @@
+#' Run Dorothea based on Seurat object
+#'
+#' Description
+#'
+#' @param seuratobject Input Seurat Object
+#' @param out_path Output path to save results
+#' @param confidence_level Curation confidence level to filter DoRothEA regulon (default "ABC")
+#' @param organism Organism of sample origin
+#' @return Seurat object with dorothea assay
+#' @export
+dorothea_base_execution <- function(seuratobject, out_path, confidence_level = c("A", "B", "C"),
+                                    organism = "human"){
+
+  if (organism == "human") {
+    dorothea_regulon_human <- get(data("dorothea_hs", package = "dorothea"))
+    regulon <- dorothea_regulon_human %>%
+      dplyr::filter(confidence %in% confidence_level)
+  } else if (organism == "mouse") {
+    dorothea_regulon_human <- get(data("dorothea_mm", package = "dorothea"))
+    regulon <- dorothea_regulon_human %>%
+      dplyr::filter(confidence %in% confidence_level)
+  } else {
+    dorothea_regulon_human <- get(data("dorothea_hs", package = "dorothea"))
+    regulon <- dorothea_regulon_human %>%
+      dplyr::filter(confidence %in% confidence_level)
+  }
+
+  seuratobject <- run_viper(seuratobject, regulon,
+                            options = list(method = "scale", minsize = 4,
+                                           eset.filter = FALSE, cores = 1,
+                                           verbose = FALSE))
+  return(seuratobject)
+}
+
+
+#' Generate cluster and condition heatmap with r effect size only for significant genes
+#'
+#' Description
+#'
+#' @param seuratobject Input Seurat Object
+#' @param out_path Output path to save results
+#' @param celltype_annotation meta data field with celltype annotations
+#' @param condition_annotation meta data field with condition annotation
+#' @param comparison_list list of wished comparisons
+#' @param organism Organism of sample origin
+#' @return tables with r-effectsize results
+#' @export
+calculate_r_effectsize <- function(seuratobject, organism, out_path, celltype_annotation, condition_annotation, comparison_list){
+
+  DefaultAssay(object = seuratobject) <- "dorothea"
+  seuratobject <- ScaleData(seuratobject)
+
+  Idents(object = seuratobject) <- condition_annotation
+  seuratobject[['doro_condition']] <- Idents(object=seuratobject)
+  Idents(object = seuratobject) <- celltype_annotation
+  seuratobject[['doro_annotation']] <- Idents(object=seuratobject)
+
+  vs_df_list <- list()
+
+  for(vs in comparison_list){
+    vs1 = vs[1]
+    vs2 = vs[2]
+
+    message("vs: ",vs1, " ", vs2, " ", date(), "\n")
+    Idents(seuratobject) <- condition_annotation
+
+    pws <- rownames(seuratobject@assays$dorothea)
+
+    ###
+    res <- list()
+    for(i in levels(seuratobject@meta.data$doro_annotation)){
+      a_sub = subset(seuratobject, cells=rownames(seuratobject@meta.data)[seuratobject@meta.data$doro_annotation==i & (seuratobject@meta.data$doro_condition %in% vs)])
+      g <- as.character(a_sub@meta.data$doro_condition)
+      g <- factor(g, levels=c(vs1, vs2)) ###############################################
+      res[[i]] = scran::findMarkers(as.matrix(a_sub@assays$dorothea@scale.data), g)[[1]]
+      res[[i]] <- as.data.frame(res[[i]])
+      r <- sapply(pws, function(pw) rcompanion::wilcoxonR(as.vector(a_sub@assays$dorothea@scale.data[pw,]), g))
+      nms <- sapply(stringr::str_split(names(r), "\\."), function(x)x[1])
+      names(r) <- nms
+      res[[i]][nms, "r"] <- r
+      res[[i]] <- res[[i]][nms, ]
+
+    }
+
+    for (cl in names(res)) {
+      res[[cl]]$tf <- rownames(res[[cl]])
+      res[[cl]]$CellType <- cl
+      colnames(res[[cl]]) <-  c("Top","p.value","FDR", "summary.logFC","logFC","r","tf","CellType")
+
+    }
+    res_df <- do.call("rbind", res)
+    res_df$tag <- sapply(res_df$FDR, function(pval) {
+      if(pval< 0.001) {
+        txt <- "***"
+      } else if (pval < 0.01) {
+        txt <- "**"
+      } else if (pval < 0.05) {
+        txt <- "*"
+      } else {
+        txt <- "ns"
+      }
+      return(txt)
+    })
+
+    vs_df_list[[glue("{vs1} vs {vs2}")]] <- res_df
+    write.csv(res_df,paste0(out_path,"/all_tfs_",glue("{vs1}_vs_{vs2}", ".csv")))
+  }
+  return(vs_df_list)
+}
+
+
+#' Group transcription factor activity by gene and cluster.
+#'
+#' Description
+#'
+#' @param activity_data_frame Data frame with tf activity score by cell
+#' @param CellsClusters Cluster annotation by cell
+#' @return A data frame with transcription factor activity scores per cell type
+#' @export
+unfiltered_tf_activity_table <- function(activity_data_frame, CellsClusters){
+  viper_scores_clusters <- activity_data_frame  %>%
+    data.frame() %>%
+    rownames_to_column("cell") %>%
+    gather(tf, activity, -cell) %>%
+    inner_join(CellsClusters)
+
+  summarized_viper_scores <- viper_scores_clusters %>%
+    group_by(tf, cell_type) %>%
+    summarise(avg = mean(activity),
+              std = sd(activity))
+
+  summarized_viper_scores_df <- summarized_viper_scores %>%
+    dplyr::select(-std) %>%
+    spread(tf, avg) %>%
+    data.frame(row.names = 1, check.names = FALSE)
+
+  summarized_viper_scores_df = t(summarized_viper_scores_df)
+
+  return(summarized_viper_scores_df)
+}
+
+
+#' Saves transcription factor activity scores per cell type into a table
+#'
+#' This function saves the transcription factor activity scores per cell type
+#' into a csv table.
+#'
+#' @param viper_scores_df data frame with transcription factor activity scores per cell
+#' @param CellsClusters Clusters perr cell
+#' @param condition Sample condition for file naming(e.g. control, disease ...)
+#' @param out_path Output path to save results
+#' @import dplyr
+#' @import tibble
+#' @import tidyr
+#' @import stringr
+#' @export
+save_unfiltered_tf_scores <- function(viper_scores_df, CellsClusters, condition, out_path){
+
+  viper_scores_clusters <- viper_scores_df  %>%
+    data.frame() %>%
+    rownames_to_column("cell") %>%
+    gather(tf, activity, -cell) %>%
+    inner_join(CellsClusters)
+
+  summarized_viper_scores <- viper_scores_clusters %>%
+    group_by(tf, cell_type) %>%
+    summarise(avg = mean(activity),
+              std = sd(activity))
+
+  summarized_viper_scores_df <- summarized_viper_scores %>%
+    dplyr::select(-std) %>%
+    spread(tf, avg) %>%
+    data.frame(row.names = 1, check.names = FALSE)
+  tf_scores <- t(summarized_viper_scores_df)
+  write.csv(tf_scores, file = paste0(out_path,'/unfiltered_tf_scores','_',condition,'.csv'))
+}
+
+
+#' Saves most variable transcription factor activity scores per cell type into a table
+#'
+#' This function saves the transcription factor activity scores per cell type
+#' into a csv table.
+#'
+#' @param tf_scores data frame with transcription factor activity scores per cell type
+#' @param condition Sample condition for file naming(e.g. control, disease ...)
+#' @param out_path Output path to save results
+#' @import dplyr
+#' @import tibble
+#' @import tidyr
+#' @import stringr
+#' @export
+save_variable_tf_scores <- function(tf_scores, condition, out_path){
+
+  highly_variable_tfs_all <- tf_scores %>%
+    group_by(tf) %>%
+    mutate(var = var(avg))  %>%
+    ungroup() %>%
+    distinct(tf)
+
+  summarized_viper_scores_df_all <- tf_scores %>%
+    semi_join(highly_variable_tfs_all, by = "tf") %>%
+    dplyr::select(-std) %>%
+    spread(tf, avg) %>%
+    data.frame(row.names = 1, check.names = FALSE)
+  tf_scores <- t(summarized_viper_scores_df_all)
+  write.csv(tf_scores, file = paste0(out_path,'/variable_tf_scores','_',condition,'.csv'))
+
+  return(tf_scores)
+}
+
+
+#' Plot heatmap of all transcription factor activities
+#'
+#' This function plots a heatmap with the transcription factor activities per
+#' cell type.
+#'
+#' @param tf_scores data frame with transcription factor activity scores per cell type
+#' @param condition Sample condition for file naming(e.g. control, disease ...)
+#' @param tag_mapping Labels for heatmap
+#' @param out_path Output path to save results
+#' @import dplyr
+#' @import tibble
+#' @import pheatmap
+#' @import tidyr
+#' @import stringr
+#' @export
+plot_tf_activity <-
+  function(tf_scores,
+           tag_mapping,
+           condition,
+           out_path) {
+    tf_scores = as.matrix(tf_scores)
+
+    plot_width = ((ncol(tf_scores) * 15) / 25.4) + 5
+    plot_height = ((nrow(tf_scores) * 3) / 25.4) + 5
+
+    column_names_table = colnames(tf_scores)
+    column_names_tags = colnames(tag_mapping)
+    if (length(column_names_tags) < length(column_names_table)) {
+      missing_col = setdiff(column_names_table, column_names_tags)
+      for (col in missing_col) {
+        tag_mapping[col] = "ns"
+      }
+    }
+
+    rownames(tf_scores) = gsub(".", "-", rownames(tf_scores), fixed = TRUE)
+
+    pdf(
+      file = paste0(out_path, '/tf_activity_', condition, '.pdf'),
+      height = plot_height,
+      width = plot_width
+    )
+
+    fh = function(x)
+      fastcluster::hclust(dist(x))
+    p <-
+      Heatmap(
+        tf_scores,
+        name = "z-score",
+        cluster_rows = fh,
+        width = ncol(tf_scores) * unit(15, "mm"),
+        height = nrow(tf_scores) * unit(3, "mm"),
+        row_title = "Transcription Factor",
+        column_title = "Cell Type",
+        row_names_gp = gpar(fontsize = 8),
+        cell_fun = function(j, i, x, y, width, height, fill) {
+          grid.text(tag_mapping[as.character(rownames(tf_scores)[i]), as.character(colnames(tf_scores)[j])], x, y, gp = gpar(fontsize = 8))
+        }
+        # layer_fun = function(j, i, x, y, width, height, fill) {
+        #   v = pindex(tf_scores, i, j)
+        #   grid.text(tag_mapping[as.character(rownames(tf_scores)[i]),as.character(colnames(tf_scores)[j])], x, y, gp = gpar(fontsize = 10))
+        # }
+      )
+    draw(p)
+    dev.off()
+  }
