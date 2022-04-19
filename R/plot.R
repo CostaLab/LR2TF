@@ -6,6 +6,7 @@
 #' @param out_path Output path to save results
 #' @import qpdf
 #' @import ComplexHeatmap
+#' @import ggplot2
 plot_condition_tf_activities <-
   function(tf_activity_tables, out_path) {
 
@@ -54,6 +55,7 @@ plot_condition_tf_activities <-
 #' @param out_path Output path to save results
 #' @import qpdf
 #' @import ComplexHeatmap
+#' @import ggplot2
 plot_condition_tf_activities_compressed <-
   function(tf_activity_tables, out_path) {
     tmp_out_path = paste0(out_path, "/tmp")
