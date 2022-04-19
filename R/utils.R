@@ -304,10 +304,10 @@ add_node_type <- function(df) {
 #'
 #' Description
 #'
-#' @param tf_table dataframe with all interactions
-#' @param LR_path
-#' @param out_path
-#' @param condition
+#' @param tf_table table with tf interactions
+#' @param LR_path path to ligand receptor interaction prediction
+#' @param out_path path to save results
+#' @param condition sample condition of data
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
@@ -335,10 +335,10 @@ combine_LR_and_TF <- function(tf_table, LR_path, out_path, condition) {
 #'
 #' Description
 #'
-#' @param tf_table dataframe with all interactions
-#' @param LR_path
-#' @param out_path
-#' @param condition
+#' @param tf_table table with tf interactions
+#' @param LR_path path to ligand receptor interaction prediction
+#' @param out_path path to save results
+#' @param condition sample condition of data
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
