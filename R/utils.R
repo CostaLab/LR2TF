@@ -274,3 +274,81 @@ plot_tf_activity <-
     draw(p)
     dev.off()
   }
+
+
+#' Adds gene type to the name of the gene
+#'
+#' Description
+#'
+#' @param df dataframe with all interactions
+#' @import dplyr
+#' @import tibble
+#' @import tidyr
+#' @export
+add_node_type <- function(df) {
+  df = df %>%
+    mutate(gene_A = ifelse(type_gene_A == "Ligand", paste0(gene_A, "|L"), gene_A))
+  df = df %>%
+    mutate(gene_A = ifelse(type_gene_A == "Receptor", paste0(gene_A, "|R"), gene_A))
+  df = df %>%
+    mutate(gene_A = ifelse(type_gene_A == "Transcription Factor", paste0(gene_A, "|TF"), gene_A))
+  df = df %>%
+    mutate(gene_B = ifelse(type_gene_B == "Ligand", paste0(gene_B, "|L"), gene_B))
+  df = df %>%
+    mutate(gene_B = ifelse(type_gene_B == "Receptor", paste0(gene_B, "|R"), gene_B))
+  df = df %>%
+    mutate(gene_B = ifelse(type_gene_B == "Transcription Factor", paste0(gene_B, "|TF"), gene_B))
+}
+
+#' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
+#'
+#' Description
+#'
+#' @param tf_table dataframe with all interactions
+#' @param LR_path
+#' @param out_path
+#' @param condition
+#' @import dplyr
+#' @import tibble
+#' @import tidyr
+combine_LR_and_TF <- function(tf_table, LR_path, out_path, condition) {
+  lr_table = read.csv(LR_path)
+  row.names(lr_table) <- lr_table$X
+  lr_table$X <- NULL
+
+  lr_ligands <- unique(lr_table$gene_A)
+  lr_receptors <- unique(lr_table$gene_B)
+  tf_receptor_interactions <- tf_table %>%
+    filter(gene_A %in% lr_receptors)
+  tf_ligand_interactions <- tf_table %>%
+    filter(gene_B %in% lr_ligands)
+
+  complete_interactions <- rbind(tf_receptor_interactions, tf_ligand_interactions)
+  complete_interactions <- rbind(complete_interactions, lr_table)
+  complete_interactions <- add_node_type(complete_interactions)
+
+  write.csv(complete_interactions, paste0(out_path, "/CRT_input_", condition, ".csv"), row.names = FALSE)
+}
+
+
+#' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
+#'
+#' Description
+#'
+#' @param tf_table dataframe with all interactions
+#' @param LR_path
+#' @param out_path
+#' @param condition
+#' @import dplyr
+#' @import tibble
+#' @import tidyr
+combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition) {
+  lr_table = read.csv(LR_path)
+  row.names(lr_table) <- lr_table$X
+  lr_table$X <- NULL
+
+  complete_interactions <- rbind(tf_table, lr_table)
+  complete_interactions <- add_node_type(complete_interactions)
+
+  write.csv(complete_interactions, paste0(out_path, "/CRT_input_", condition, ".csv"), row.names = FALSE)
+}
