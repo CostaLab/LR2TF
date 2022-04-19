@@ -62,10 +62,7 @@ plot_condition_tf_activities_compressed <-
     for (nm in names(tf_activity_tables)) {
       nm_df <- data.frame(tf_activity_tables[[nm]])
 
-      plot_width = (((length(unique(nm_df$CellType))) * 15) / 25.4) + 5
-      plot_height = (((length(unique(nm_df$tf))) * 4) / 25.4) + 5
-
-      pdf(paste0(tmp_out_path, "/", chartr(" ", "_", nm), ".pdf"), height = plot_height, width = plot_width)
+      pdf(paste0(tmp_out_path, "/", chartr(" ", "_", nm), ".pdf"))
 
       nm_df_short = nm_df[c("r", "tf", "CellType")]
       nm_df_clust = tapply(nm_df_short$r, list(tf = nm_df_short$tf, CellType = nm_df_short$CellType), mean)
@@ -82,7 +79,7 @@ plot_condition_tf_activities_compressed <-
 
     file_list = list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
     qpdf::pdf_combine(input = file_list,
-                      output = paste0(out_path, "/cluster_condition_activity_difference.pdf"))
+                      output = paste0(out_path, "/cluster_condition_activity_difference_compressed.pdf"))
 
     unlink(tmp_out_path, recursive = TRUE)
   }
