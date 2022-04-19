@@ -8,6 +8,8 @@
 #' @param celltype_annotation meta data field with celltype annotations
 #' @param condition_annotation meta data field with condition annotation
 #' @param comparison_list list of wished comparisons
+#' @import glue
+#' @import maditr
 #' @export
 condition_comparison_significant <- function(seuratobject, out_path, celltype_annotation, condition_annotation, comparison_list){
 
