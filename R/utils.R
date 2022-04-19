@@ -311,6 +311,7 @@ add_node_type <- function(df) {
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
+#' @export
 combine_LR_and_TF <- function(tf_table, LR_path, out_path, condition) {
   lr_table = read.csv(LR_path)
   row.names(lr_table) <- lr_table$X
@@ -342,6 +343,7 @@ combine_LR_and_TF <- function(tf_table, LR_path, out_path, condition) {
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
+#' @export
 combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition) {
   lr_table = read.csv(LR_path)
   row.names(lr_table) <- lr_table$X
