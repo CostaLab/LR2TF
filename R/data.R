@@ -21,3 +21,9 @@
 #'   \item 9606: Human gene symbol
 #' }
 "ligands_homologous"
+
+#' Example dataset
+#'
+#' Example dataset for tutorial execution of the package
+#'
+"bone_marrow_stromal_cell_example"
