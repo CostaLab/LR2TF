@@ -73,6 +73,12 @@ LR2TF::combine_LR_and_TF(result_table_control, control_lr_file, out_path, "contr
 LR2TF::combine_LR_and_TF(result_table_pmf, pmf_lr_file, out_path, "PMF_MF2")
 
 ```
+## Analysis of mouse data
+It is also possible to analyse scRNA-seq data from mouse samples. For this, the organism parameter must be set to "mouse" and the following function must be used when generating the CrossTalkeR input:
+
+```{r, include = TRUE, eval = FALSE}
+LR2TF::generate_CrossTalkeR_input_mouse_significant_table()
+```
 
 ## References
 
