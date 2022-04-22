@@ -20,28 +20,47 @@ The results can be combined with ligand-receptor interactions and then analyzed 
 
 ## Installation
 The package can be installed directly from github:
+&nbsp;
+
 ```{r, include = TRUE, eval = FALSE}
 library(devtools)
 install_github("CostaLab/LR2TF")
+
+library(remotes)
+install_github("CostaLab/LR2TF", build_vignettes = TRUE)
 ```
+&nbsp;
 
 ## Usage
 First the package and Seurat need to be imported:
+&nbsp;
+
 ```{r eval = FALSE}
 library(LR2TF)
 library(Seurat)
 ```
+&nbsp;
+
 In the package an example dataset it included that can be accessed:
+&nbsp;
+
 ```{r, include = TRUE, eval = FALSE}
 seuratobject = LR2TF::bone_marrow_stromal_cell_example
 ```
+&nbsp;
+
 Before the execution, some parameters need to be defined:
+&nbsp;
+
 1. Path to save the results to
 2. defining the confidence level of the dorothea regulon (A (strong) to E (low))
 3. the organism of the sample was extracted from
 4. Name of the meta-data field in the Seurat object of the cell annotation
 5. Name of the meta-data field in the Seurat object of the condition annotation
 6. List of condition comparison to be calculated
+
+&nbsp;
+
 ```{r, include = TRUE, eval = FALSE}
 out_path = '/Path/to/result/directory'
 confidence_level = c("A", "B", "C", "D", "E")
@@ -50,21 +69,37 @@ celltype_annotation = "annotation"
 condition_annotation = "protocol"
 comparison_list = list(c("control", "PMF,MF2"))
 ```
+&nbsp;
+
 After defining the necessary parameter the transcription factor activity can be predicted by calling:
+&nbsp;
+
 ```{r, include = TRUE, eval = FALSE}
 results = LR2TF::dorothea_tf_prediction(seuratobject, out_path, confidence_level, organism, condition_annotation, celltype_annotation, comparison_list)
 ```
+&nbsp;
+
 As result an object containing three fields is obtained (here example for control condition):
+&nbsp;
+
 * results[["control"]][["cluster"]] -> cluster specific transcription factors
 * results[["control"]][["condition"]] -> condition specific transcription factors
 * results[["control_average_expression"]] -> average gene expression matrix of specified condition
 
+&nbsp;
+
 For the conversion into the CrossTalkeR input format and the connection to receptor and ligands, either the cluster or the condition specific transcription factors can be used.
+&nbsp;
+
 ```{r, include = TRUE, eval = FALSE}
 result_table_control <- LR2TF::generate_CrossTalkeR_input_significant_table(results[["control"]][["condition"]], confidence_level, results[["control_average_expression"]])
 result_table_pmf <- LR2TF::generate_CrossTalkeR_input_significant_table(results[["PMF_MF2"]][["condition"]], confidence_level, results[["PMF_MF2_average_expression"]])
 ```
+&nbsp;
+
 The last step is to combine previous results from ligand receptor interaction analyses (e.g. CellPhoneDB) with the transcription factor results:
+&nbsp;
+
 ```{r, include = TRUE, eval = FALSE}
 control_lr_file = "/home/vkraemer/R_results/CrossTalkeR_LRtables/ControlLR.csv"
 pmf_lr_file = "/home/vkraemer/R_results/CrossTalkeR_LRtables/PMFLR.csv"
@@ -73,12 +108,16 @@ LR2TF::combine_LR_and_TF(result_table_control, control_lr_file, out_path, "contr
 LR2TF::combine_LR_and_TF(result_table_pmf, pmf_lr_file, out_path, "PMF_MF2")
 
 ```
+&nbsp;
+
 ## Analysis of mouse data
 It is also possible to analyse scRNA-seq data from mouse samples. For this, the organism parameter must be set to "mouse" and the following function must be used when generating the CrossTalkeR input:
+&nbsp;
 
 ```{r, include = TRUE, eval = FALSE}
 LR2TF::generate_CrossTalkeR_input_mouse_significant_table()
 ```
+&nbsp;
 
 ## References
 
