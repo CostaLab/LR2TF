@@ -111,7 +111,7 @@ plot_highly_variable_tfs <-
 
     highly_variable_tfs <- tf_scores %>%
       group_by(tf) %>%
-      mutate(var = var(avg))  %>%
+      mutate(var = var(avg)) %>%
       ungroup() %>%
       top_n(sort_factor, var) %>%
       distinct(tf)
@@ -136,6 +136,7 @@ plot_highly_variable_tfs <-
 
     fh = function(x)
       fastcluster::hclust(dist(x))
+
     p <-
       Heatmap(
         summarized_scores_df,
@@ -182,6 +183,7 @@ plot_tf_activity_compressed <-
 
     fh = function(x)
       fastcluster::hclust(dist(x))
+
     p <-
       Heatmap(
         tf_scores,
@@ -196,3 +198,120 @@ plot_tf_activity_compressed <-
     draw(p)
     dev.off()
   }
+
+
+#' Plot heatmap of highly variable transcription factors for conditions
+#'
+#' This function plots a heatmap with the transcription factor activity per
+#' condition. Only the most variable transcription factors are included, which
+#' is determined by the statistical variance of the activity scores.
+#'
+#' @param tf_scores data frame with transcription factor activity scores per cell type
+#' @param condition Sample condition for file naming(e.g. control, disease ...)
+#' @param out_path Output path to save results
+#' @param clusters Number of clusters
+#' @import dplyr
+#' @import tibble
+#' @import pheatmap
+#' @import tidyr
+#' @import stringr
+#' @export
+plot_highly_variable_tfs_condition <-
+  function(tf_scores, condition, out_path, clusters) {
+    sort_factor = clusters * 20
+
+    highly_variable_tfs <- tf_scores %>%
+      group_by(tf) %>%
+      mutate(var = var(avg)) %>%
+      ungroup() %>%
+      top_n(sort_factor, var) %>%
+      distinct(tf)
+
+    summarized_scores_df <- tf_scores %>%
+      semi_join(highly_variable_tfs, by = "tf") %>%
+      dplyr::select(-std) %>%
+      spread(tf, avg) %>%
+      data.frame(row.names = 1, check.names = FALSE)
+
+    summarized_scores_df = as.matrix(t(summarized_scores_df))
+
+    plot_width = ((ncol(summarized_scores_df) * 15) / 25.4) + 5
+    plot_height = ((nrow(summarized_scores_df) * 4) / 25.4) + 5
+
+    pdf(
+      file = paste0(out_path,
+                    '/tf_activity_top20_variable_', condition, '.pdf'),
+      width = plot_width,
+      height = plot_height
+    )
+
+    fh = function(x)
+      fastcluster::hclust(dist(x))
+
+    p <-
+      Heatmap(
+        summarized_scores_df,
+        name = "z-score",
+        cluster_columns = fh,
+        width = ncol(summarized_scores_df) * unit(15, "mm"),
+        height = nrow(summarized_scores_df) * unit(4, "mm"),
+        row_title = "Transcription Factor",
+        column_title = "Condition"
+      )
+    draw(p, column_title = glue("{condition} top 20 variable transcription factor activities"))
+
+    #print(viper_hmap)
+    dev.off()
+  }
+
+
+#' Plots transcription factor activities compared between condition without significance mapping
+#'
+#' Description
+#'
+#' @param tf_scores Table with tf activities
+#' @param cluster current cluster
+#' @param out_path Output path to save results
+#' @import qpdf
+#' @import ComplexHeatmap
+#' @import ggplot2
+#' @import grid
+plot_tf_activity_without_mapping_condition <-
+  function(tf_scores,
+           cluster,
+           out_path) {
+    tf_scores = as.matrix(tf_scores)
+
+    plot_width = ((ncol(tf_scores) * 15) / 25.4) + 5
+    plot_height = ((nrow(tf_scores) * 3) / 25.4) + 5
+
+    rownames(tf_scores) = gsub(".", "-", rownames(tf_scores), fixed = TRUE)
+
+    pdf(
+      file = paste0(out_path, '/tf_activity_', cluster, '.pdf'),
+      height = plot_height,
+      width = plot_width
+    )
+
+    fh = function(x)
+      fastcluster::hclust(dist(x))
+
+    p <-
+      Heatmap(
+        tf_scores,
+        name = "z-score",
+        cluster_rows = fh,
+        width = ncol(tf_scores) * unit(15, "mm"),
+        height = nrow(tf_scores) * unit(3, "mm"),
+        row_title = "Transcription Factor",
+        column_title = "Condition",
+        row_names_gp = gpar(fontsize = 8)
+        # layer_fun = function(j, i, x, y, width, height, fill) {
+        #   v = pindex(tf_scores, i, j)
+        #   grid.text(tag_mapping[as.character(rownames(tf_scores)[i]),as.character(colnames(tf_scores)[j])], x, y, gp = gpar(fontsize = 10))
+        # }
+      )
+    draw(p, column_title = glue("{condition} transcription factor activity heatmap"))
+    dev.off()
+  }
+
