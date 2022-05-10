@@ -101,8 +101,8 @@ The last step is to combine previous results from ligand receptor interaction an
 &nbsp;
 
 ```{r, include = TRUE, eval = FALSE}
-control_lr_file = "/home/vkraemer/R_results/CrossTalkeR_LRtables/ControlLR.csv"
-pmf_lr_file = "/home/vkraemer/R_results/CrossTalkeR_LRtables/PMFLR.csv"
+control_lr_file = "/Path/to/CellphoneDB/output/ControlLR.csv"
+pmf_lr_file = "/Path/to/CellphoneDB/output/PMFLR.csv"
 
 LR2TF::combine_LR_and_TF(result_table_control, control_lr_file, out_path, "control")
 LR2TF::combine_LR_and_TF(result_table_pmf, pmf_lr_file, out_path, "PMF_MF2")
