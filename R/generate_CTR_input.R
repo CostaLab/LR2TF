@@ -30,13 +30,19 @@ generate_CrossTalkeR_input_significant_table <-
       )
     ligands = list(intercell$source_genesymbol)
 
-    posttranslational <-
-      import_post_translational_interactions(organism = '9606',
-                                             genesymbol = TRUE)
-    posttranslational = aggregate(posttranslational$source_genesymbol ~ posttranslational$target_genesymbol,
-                                  FUN = c)
-    colnames(posttranslational) <- c('tf', 'receptors')
-    posttranslational = posttranslational %>%
+    # posttranslational <-
+    #   import_post_translational_interactions(organism = '9606',
+    #                                          genesymbol = TRUE)
+    # posttranslational = aggregate(posttranslational$source_genesymbol ~ posttranslational$target_genesymbol,
+    #                               FUN = c)
+    # colnames(posttranslational) <- c('tf', 'receptors')
+    # posttranslational = posttranslational %>%
+    #   remove_rownames %>%
+    #   tibble::column_to_rownames(var = 'tf')
+
+    R2TF = aggregate(RTF_DB$receptor ~ RTF_DB$tf, FUN = c)
+    colnames(R2TF) <- c('tf', 'receptors')
+    R2TF = R2TF %>%
       remove_rownames %>%
       tibble::column_to_rownames(var = 'tf')
 
@@ -82,7 +88,7 @@ generate_CrossTalkeR_input_significant_table <-
       if (tf_activities[row, "z_score"] > 0) {
         tf = as.character(tf_activities[row, "gene"])
         targets = sorted_regulon[tf,][1]
-        receptors = posttranslational[tf,][1]
+        receptors = R2TF[tf,][1]
         tf_ligands = intersect(targets[[1]], ligands[[1]])
         if (length(tf_ligands) > 0) {
           for (ligand in tf_ligands) {
