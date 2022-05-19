@@ -27,3 +27,9 @@
 #' Example dataset for tutorial execution of the package
 #'
 "bone_marrow_stromal_cell_example"
+
+#' Dataframe with pre-computed receptor to transcription faactor connections
+#'
+#' Dataframe with pre-computed receptor to transcription faactor connections from Omnipath
+#'
+"RTF_DB"
