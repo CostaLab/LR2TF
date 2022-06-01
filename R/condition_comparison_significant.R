@@ -77,5 +77,6 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
     write.csv(res_df,paste0(out_path,"/all_tfs_",glue("{vs1}_vs_{vs2}", ".csv")))
   }
 
+  saveRDS(vs_df_list, file = paste0(out_path, "/comparison_dfs.RDS"))
   return(vs_df_list)
 }
