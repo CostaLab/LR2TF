@@ -55,6 +55,7 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
 
     }
     res_df <- do.call("rbind", res)
+    res_df <- na.omit(res_df)
     res_df$tag <- sapply(res_df$FDR, function(pval) {
       if(pval< 0.001) {
         txt <- "***"
