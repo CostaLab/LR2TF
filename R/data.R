@@ -26,6 +26,7 @@
 #'
 #' Example dataset for tutorial execution of the package
 #'
+#' @export bone_marrow_stromal_cell_example
 "bone_marrow_stromal_cell_example"
 
 #' Dataframe with pre-computed receptor to transcription faactor connections
