@@ -45,7 +45,7 @@ In the package an example dataset it included that can be accessed:
 &nbsp;
 
 ```{r, include = TRUE, eval = FALSE}
-seuratobject = LR2TF::bone_marrow_stromal_cell_example
+data(bone_marrow_stromal_cell_example, package = "LR2TF")
 ```
 &nbsp;
 
@@ -75,7 +75,7 @@ After defining the necessary parameter the transcription factor activity can be 
 &nbsp;
 
 ```{r, include = TRUE, eval = FALSE}
-results = LR2TF::dorothea_tf_prediction(seuratobject, out_path, confidence_level, organism, condition_annotation, celltype_annotation, comparison_list)
+results = LR2TF::dorothea_tf_prediction(bone_marrow_stromal_cell_example, out_path, confidence_level, organism, condition_annotation, celltype_annotation, comparison_list)
 ```
 &nbsp;
 
