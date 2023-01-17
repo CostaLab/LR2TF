@@ -13,7 +13,7 @@
 #' @param log2fc log2fc value for filtering
 #' @export
 dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c("A", "B", "C"),
-                                   organism = "human", condition_Ident, celltype_Ident, comparison_list = NULL, pvalue = 0.05, log2fc = 0.0) {
+                                   organism = "human", condition_Ident, celltype_Ident, comparison_list = NA, pvalue = 0.05, log2fc = 0.0) {
 
   Idents(object = seuratobject) <- celltype_Ident
 
@@ -21,7 +21,7 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
   dir.create(out_path)
   seuratobject = dorothea_base_execution(seuratobject, out_path, confidence_level, organism)
 
-  if (is.null(comparison_list)) {
+  if (is.na(comparison_list)) {
     seuratobject[['doro_annotation']] <- Idents(object = seuratobject)
     result_list <- list()
 
