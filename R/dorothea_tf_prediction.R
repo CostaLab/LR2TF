@@ -29,7 +29,7 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
     name <- levels(seuratobject)
     name <- str_replace_all(name, "[,;.:-]", "_")
 
-    seuratobject.averages <- AverageExpression(seuratobject)
+    seuratobject.averages <- AverageExpression(seuratobject, group.by = celltype_annotation, assays = "RNA")
     write.csv(seuratobject.averages[["RNA"]], file =
       paste0(out_path, '/average_gene_expression_by_cluster_',
              name, '.csv'))
