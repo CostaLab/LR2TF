@@ -11,7 +11,7 @@ dorothea_tf_prediction(
   organism = "human",
   condition_Ident,
   celltype_Ident,
-  comparison_list,
+  comparison_list = NULL,
   pvalue = 0.05,
   log2fc = 0
 )
