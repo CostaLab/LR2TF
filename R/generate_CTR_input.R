@@ -40,7 +40,7 @@ generate_CrossTalkeR_input_significant_table <-
     #   remove_rownames %>%
     #   tibble::column_to_rownames(var = 'tf')
 
-    R2TF = aggregate(RTF_DB$receptor ~ RTF_DB$tf, FUN = c)
+    R2TF = aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
     colnames(R2TF) <- c('tf', 'receptors')
     R2TF = R2TF %>%
       remove_rownames %>%
@@ -187,16 +187,18 @@ generate_CrossTalkeR_input_mouse_significant_table <-
            gene_expression) {
 
     dorothea_regulon_human <-
-      get(data("dorothea_hs", package = "dorothea"))
+      get(data("dorothea_mm", package = "dorothea"))
     regulon <- dorothea_regulon_human %>%
       dplyr::filter(confidence %in% confidence_level)
 
-    intercell <-
-      import_intercell_network(
-        receiver_param = list(categories = c('receptor')),
-        transmitter_param = list(categories = c('ligand'))
-      )
-    ligands = list(intercell$source_genesymbol)
+    ligands = converted_ligands
+
+    # intercell <-
+    #   import_intercell_network(
+    #     receiver_param = list(categories = c('receptor')),
+    #     transmitter_param = list(categories = c('ligand'))
+    #   )
+    # ligands = list(intercell$source_genesymbol)
 
     # posttranslational <-
     #   import_post_translational_interactions(organism = '9606',
@@ -209,7 +211,7 @@ generate_CrossTalkeR_input_mouse_significant_table <-
     #   tibble::column_to_rownames(var =
     #                                'tf')
 
-    R2TF = aggregate(RTF_DB$receptor ~ RTF_DB$tf, FUN = c)
+    R2TF = aggregate(RTF_DB_mouse$receptor ~ RTF_DB_mouse$tf, FUN = c)
     colnames(R2TF) <- c('tf', 'receptors')
     R2TF = R2TF %>%
       remove_rownames %>%
@@ -258,11 +260,11 @@ generate_CrossTalkeR_input_mouse_significant_table <-
         tf = as.character(tf_activities[row,]["gene"])
         targets = sorted_regulon[tf,][1]
         receptors = R2TF[tf,][1]
-        tf_ligands = intersect(targets[[1]], ligands[[1]])
+        tf_ligands = intersect(targets[[1]], ligands)
         if (length(tf_ligands) > 0) {
           for (ligand in tf_ligands) {
             expressed = FALSE
-            translations = translate_to_mouse_ligands(ligand)
+            translations = ligand
             if (length(translations) > 0) {
               for (l in translations) {
                 if (l %in% rownames(gene_expression)) {

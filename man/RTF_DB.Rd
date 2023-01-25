@@ -3,7 +3,7 @@
 \docType{data}
 \name{RTF_DB}
 \alias{RTF_DB}
-\title{Dataframe with pre-computed receptor to transcription faactor connections}
+\title{Dataframe with pre-computed receptor to transcription factor connections}
 \format{
 An object of class \code{data.frame} with 29721 rows and 2 columns.
 }
@@ -11,6 +11,6 @@ An object of class \code{data.frame} with 29721 rows and 2 columns.
 RTF_DB
 }
 \description{
-Dataframe with pre-computed receptor to transcription faactor connections from Omnipath
+Dataframe with pre-computed receptor to transcription factor connections from Omnipath
 }
 \keyword{datasets}

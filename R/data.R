@@ -29,8 +29,14 @@
 #'
 "bone_marrow_stromal_cell_example"
 
-#' Dataframe with pre-computed receptor to transcription faactor connections
+#' Dataframe with pre-computed receptor to transcription factor connections
 #'
-#' Dataframe with pre-computed receptor to transcription faactor connections from Omnipath
+#' Dataframe with pre-computed receptor to transcription factor connections from Omnipath
 #'
 "RTF_DB"
+
+#' Dataframe with pre-computed receptor to transcription factor connections 2nd version
+#'
+#' Dataframe with pre-computed receptor to transcription factor connections from Omnipath
+#'
+"RTF_DB_2"

@@ -21,6 +21,13 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
   dir.create(out_path)
   seuratobject = dorothea_base_execution(seuratobject, out_path, confidence_level, organism)
 
+  Idents(object = seuratobject) <- condition_Ident
+  if(length(comparison_list)> 0 & length(levels(Idents(seuratobject)))<2){
+    comparison_list = NA
+    print("Only one condition was found in the data, although a list of comparisons was provided. The analyses are performed only for the present condition!")
+  }
+  Idents(object = seuratobject) <- celltype_Ident
+
   if (is.na(comparison_list)) {
     seuratobject[['doro_annotation']] <- Idents(object = seuratobject)
     result_list <- list()
@@ -76,7 +83,7 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
 
       name <- str_replace_all(name, "[,;.:-]", "_")
 
-      sub_object.averages <- AverageExpression(sub_object)
+      sub_object.averages <- AverageExpression(sub_object, group.by = celltype_annotation, assays = "RNA")
       write.csv(sub_object.averages[["RNA"]], file =
         paste0(out_path, '/average_gene_expression_by_cluster_',
                name, '.csv'))
