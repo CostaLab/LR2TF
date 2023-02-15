@@ -304,36 +304,6 @@ add_node_type <- function(df) {
     mutate(gene_B = ifelse(type_gene_B == "Transcription Factor", paste0(gene_B, "|TF"), gene_B))
 }
 
-#' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
-#'
-#' Description
-#'
-#' @param tf_table table with tf interactions
-#' @param LR_path path to ligand receptor interaction prediction
-#' @param out_path path to save results
-#' @param condition sample condition of data
-#' @import dplyr
-#' @import tibble
-#' @import tidyr
-#' @export
-combine_LR_and_TF <- function(tf_table, LR_path, out_path, condition) {
-  lr_table = read.csv(LR_path)
-  row.names(lr_table) <- lr_table$X
-  lr_table$X <- NULL
-
-  lr_ligands <- unique(lr_table$gene_A)
-  lr_receptors <- unique(lr_table$gene_B)
-  tf_receptor_interactions <- tf_table %>%
-    filter(gene_A %in% lr_receptors)
-  tf_ligand_interactions <- tf_table %>%
-    filter(gene_B %in% lr_ligands)
-
-  complete_interactions <- rbind(tf_receptor_interactions, tf_ligand_interactions)
-  complete_interactions <- rbind(complete_interactions, lr_table)
-  complete_interactions <- add_node_type(complete_interactions)
-
-  write.csv(complete_interactions, paste0(out_path, "/CRT_input_", condition, ".csv"), row.names = FALSE)
-}
 
 #' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
 #'
@@ -347,7 +317,7 @@ combine_LR_and_TF <- function(tf_table, LR_path, out_path, condition) {
 #' @import tibble
 #' @import tidyr
 #' @export
-combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition) {
+combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_node_type=FALSE) {
 
   if (!is.data.frame(LR_prediction)) {
     lr_table = read.csv(LR_prediction)
@@ -366,8 +336,9 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition) {
 
   complete_interactions <- rbind(tf_receptor_interactions, tf_ligand_interactions)
   complete_interactions <- rbind(complete_interactions, lr_table)
-  complete_interactions <- add_node_type(complete_interactions)
-
+  if(add_node_type){
+    complete_interactions <- add_node_type(complete_interactions)
+  }
   write.csv(complete_interactions, paste0(out_path, "/CRT_input_", condition, ".csv"), row.names = FALSE)
 }
 
