@@ -4,9 +4,13 @@
 \alias{combine_LR_and_TF}
 \title{Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions}
 \usage{
-combine_LR_and_TF(tf_table, LR_prediction, out_path, condition)
-
-combine_LR_and_TF(tf_table, LR_prediction, out_path, condition)
+combine_LR_and_TF(
+  tf_table,
+  LR_prediction,
+  out_path,
+  condition,
+  add_node_type = FALSE
+)
 }
 \arguments{
 \item{tf_table}{table with tf interactions}
@@ -16,11 +20,7 @@ combine_LR_and_TF(tf_table, LR_prediction, out_path, condition)
 \item{out_path}{path to save results}
 
 \item{condition}{sample condition of data}
-
-\item{LR_path}{path to ligand receptor interaction prediction}
 }
 \description{
-Description
-
 Description
 }
