@@ -317,7 +317,7 @@ add_node_type <- function(df) {
 #' @import tibble
 #' @import tidyr
 #' @export
-combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_node_type=FALSE) {
+combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_node_type = FALSE) {
 
   if (!is.data.frame(LR_prediction)) {
     lr_table = read.csv(LR_prediction)
@@ -336,7 +336,7 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
 
   complete_interactions <- rbind(tf_receptor_interactions, tf_ligand_interactions)
   complete_interactions <- rbind(complete_interactions, lr_table)
-  if(add_node_type){
+  if (add_node_type) {
     complete_interactions <- add_node_type(complete_interactions)
   }
   write.csv(complete_interactions, paste0(out_path, "/CRT_input_", condition, ".csv"), row.names = FALSE)
@@ -355,9 +355,14 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
 #' @import tidyr
 #' @export
 combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition) {
-  lr_table = read.csv(LR_path)
-  row.names(lr_table) <- lr_table$X
-  lr_table$X <- NULL
+
+  if (!is.data.frame(LR_prediction)) {
+    lr_table = read.csv(LR_prediction)
+    row.names(lr_table) <- lr_table$X
+    lr_table$X <- NULL
+  } else {
+    lr_table = LR_prediction
+  }
 
   complete_interactions <- rbind(tf_table, lr_table)
   complete_interactions <- add_node_type(complete_interactions)
