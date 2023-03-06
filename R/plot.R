@@ -11,12 +11,14 @@
 #' @export
 plot_condition_tf_activities <-
   function(tf_activity_tables, out_path) {
-
     tmp_out_path = paste0(out_path, "/tmp")
     dir.create(tmp_out_path)
 
     for (nm in names(tf_activity_tables)) {
       nm_df <- data.frame(tf_activity_tables[[nm]])
+      significant_res <- nm_df[nm_df$tag == '***',]
+      significant_genes <- unique(significant_res$tf)
+      nm_df <- filter(nm_df, nm_df$tf %in% significant_genes)
 
       plot_width = (((length(unique(nm_df$CellType))) * 15) / 25.4) + 5
       plot_height = (((length(unique(nm_df$tf))) * 4) / 25.4) + 5
@@ -67,6 +69,9 @@ plot_condition_tf_activities_compressed <-
 
     for (nm in names(tf_activity_tables)) {
       nm_df <- data.frame(tf_activity_tables[[nm]])
+      significant_res <- nm_df[nm_df$tag == '***',]
+      significant_genes <- unique(significant_res$tf)
+      nm_df <- filter(nm_df, nm_df$tf %in% significant_genes)
 
       pdf(paste0(tmp_out_path, "/", chartr(" ", "_", nm), ".pdf"))
 

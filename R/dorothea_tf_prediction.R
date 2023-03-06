@@ -71,7 +71,8 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
       for (result_name in names(compared_significant_tfs)) {
         if (grepl(name, result_name, fixed = TRUE)) {
           tf_condition_significant = compared_significant_tfs[[result_name]]
-          tf_condition_significant = tf_condition_significant[(tf_condition_significant$tag == "***"),]
+          #tf_condition_significant = tf_condition_significant[(tf_condition_significant$tag == "***"),]
+          tf_condition_significant = filter(tf_condition_significant, FDR < as.double(pvalue))
           tf_condition_significant = filter(tf_condition_significant, logFC > as.double(log2fc) | logFC < (0 - as.double(log2fc)))
           tf_condition_significant = tf_condition_significant[c("tf", "tag", "CellType")]
           tf_condition_significant = tf_condition_significant %>% rename(gene = tf, cluster = CellType)
@@ -88,7 +89,7 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
         paste0(out_path, '/average_gene_expression_by_cluster_',
                name, '.csv'))
 
-      tf_activity_scores = get_significant_tfs(sub_object, name, out_path, compared_tfs)
+      tf_activity_scores = get_significant_tfs(sub_object, name, out_path, compared_tfs, pval = pvalue, log2fc = log2fc)
       result_list[[name]] = tf_activity_scores
       result_list[[paste0(name, "_average_expression")]] = sub_object.averages[["RNA"]]
     }

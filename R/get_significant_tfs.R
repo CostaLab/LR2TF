@@ -6,9 +6,11 @@
 #' @param condition Experminet condition (e.g. disease, knockout ...)
 #' @param out_path Output path to save results
 #' @param tf_condition_significant condition comparison results
+#' @param pval p-value to filter results
+#' @param log2fc log fold change value to filter results
 #' @return A data frame with transcription factor activity scores per cell type
 #' @export
-get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_significant) {
+get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_significant, pval, log2fc) {
   single_result_path <- paste0(out_path, '/', condition)
   dir.create(single_result_path)
 
@@ -52,9 +54,11 @@ get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_
     return(txt)
   })
 
-  tag_mapping = seuratobject.markers[c("gene", "tag", "log_fc_tag", "cluster")]
-  tag_mapping = tag_mapping[(tag_mapping$tag == "***"),]
-  tag_mapping = tag_mapping[(tag_mapping$log_fc_tag == "***"),]
+  tag_mapping = seuratobject.markers[c("gene", "tag", "log_fc_tag", "cluster", "avg_log2FC", "p_val_adj")]
+  tag_mapping = filter(tag_mapping, p_val_adj < as.double(pval))
+  tag_mapping = filter(tag_mapping, avg_log2FC > as.double(log2fc) | avg_log2FC < (0 - as.double(log2fc)))
+  #tag_mapping = tag_mapping[(tag_mapping$tag == "***"),]
+  #tag_mapping = tag_mapping[(tag_mapping$log_fc_tag == "***"),]
   tag_mapping = dcast(tag_mapping, gene ~ cluster, value.var = "tag")
   row.names(tag_mapping) = tag_mapping$gene
   tag_mapping$gene = NULL

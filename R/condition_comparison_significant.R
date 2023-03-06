@@ -69,10 +69,11 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
       return(txt)
     })
 
-    significant_res <- res_df[res_df$tag == '***',]
-    significant_genes <- unique(significant_res$tf)
+    #significant_res <- res_df[res_df$tag == '***',]
+    #significant_genes <- unique(significant_res$tf)
 
-    end_res <- filter(res_df, res_df$tf %in% significant_genes)
+    #end_res <- filter(res_df, res_df$tf %in% significant_genes)
+    end_res <- res_df
 
     vs_df_list[[glue("{vs1} vs {vs2}")]] <- end_res
     write.csv(res_df,paste0(out_path,"/all_tfs_",glue("{vs1}_vs_{vs2}", ".csv")))
