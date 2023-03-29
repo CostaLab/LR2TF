@@ -340,6 +340,7 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
     complete_interactions <- add_node_type(complete_interactions)
   }
   write.csv(complete_interactions, paste0(out_path, "/CRT_input_", condition, ".csv"), row.names = FALSE)
+  return(complete_interactions)
 }
 
 #' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
