@@ -339,7 +339,7 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
   if (add_node_type) {
     complete_interactions <- add_node_type(complete_interactions)
   }
-  write.csv(complete_interactions, paste0(out_path, "/CRT_input_", condition, ".csv"), row.names = FALSE)
+  write.csv(complete_interactions, paste0(out_path, "/CTR_input_", condition, ".csv"), row.names = FALSE)
   return(complete_interactions)
 }
 
@@ -368,7 +368,7 @@ combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition)
   complete_interactions <- rbind(tf_table, lr_table)
   complete_interactions <- add_node_type(complete_interactions)
 
-  write.csv(complete_interactions, paste0(out_path, "/CRT_input_", condition, ".csv"), row.names = FALSE)
+  write.csv(complete_interactions, paste0(out_path, "/CTR_input_", condition, ".csv"), row.names = FALSE)
 }
 
 
