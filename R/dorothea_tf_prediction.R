@@ -28,7 +28,7 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
   }
   Idents(object = seuratobject) <- celltype_Ident
 
-  if (is.na(comparison_list)) {
+  if (is.na(comparison_list)[[1]]) {
     seuratobject[['doro_annotation']] <- Idents(object = seuratobject)
     result_list <- list()
 
