@@ -8,7 +8,9 @@ get_significant_tfs(
   seuratobject,
   condition,
   out_path,
-  tf_condition_significant
+  tf_condition_significant,
+  pval,
+  log2fc
 )
 }
 \arguments{
@@ -19,6 +21,10 @@ get_significant_tfs(
 \item{out_path}{Output path to save results}
 
 \item{tf_condition_significant}{condition comparison results}
+
+\item{pval}{p-value to filter results}
+
+\item{log2fc}{log fold change value to filter results}
 }
 \value{
 A data frame with transcription factor activity scores per cell type

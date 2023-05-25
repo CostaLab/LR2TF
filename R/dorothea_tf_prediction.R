@@ -19,11 +19,11 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
 
   out_path <- paste0(out_path, "/")
   dir.create(out_path)
-  seuratobject = dorothea_base_execution(seuratobject, out_path, confidence_level, organism)
+  seuratobject <- dorothea_base_execution(seuratobject, out_path, confidence_level, organism)
 
   Idents(object = seuratobject) <- condition_Ident
   if(length(comparison_list)> 0 & length(levels(Idents(seuratobject)))<2){
-    comparison_list = NA
+    comparison_list <- NA
     print("Only one condition was found in the data, although a list of comparisons was provided. The analyses are performed only for the present condition!")
   }
   Idents(object = seuratobject) <- celltype_Ident
@@ -46,6 +46,7 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
     result_list[[paste0(name, "_average_expression")]] = seuratobject.averages[["RNA"]]
 
     saveRDS(result_list, file = paste0(out_path, "/result_list.RDS"))
+    saveRDS(seuratobject, file = paste0(out_path, "/result_seurat_object.RDS"))
     return(result_list)
   } else {
     out_path_compared <- paste0(out_path, "/compared")
@@ -94,6 +95,7 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
       result_list[[paste0(name, "_average_expression")]] = sub_object.averages[["RNA"]]
     }
     saveRDS(result_list, file = paste0(out_path, "/result_list.RDS"))
+    saveRDS(seuratobject, file = paste0(out_path, "/result_seurat_object.RDS"))
     return(result_list)
   }
 

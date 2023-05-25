@@ -61,8 +61,8 @@ calculate_r_effectsize <- function(seuratobject, organism, out_path, celltype_an
   vs_df_list <- list()
 
   for (vs in comparison_list) {
-    vs1 = vs[1]
-    vs2 = vs[2]
+    vs1 <- vs[1]
+    vs2 <- vs[2]
 
     message("vs: ", vs1, " ", vs2, " ", date(), "\n")
     Idents(seuratobject) <- condition_annotation
@@ -72,10 +72,10 @@ calculate_r_effectsize <- function(seuratobject, organism, out_path, celltype_an
     ###
     res <- list()
     for (i in levels(seuratobject@meta.data$doro_annotation)) {
-      a_sub = subset(seuratobject, cells = rownames(seuratobject@meta.data)[seuratobject@meta.data$doro_annotation == i & (seuratobject@meta.data$doro_condition %in% vs)])
+      a_sub <- subset(seuratobject, cells = rownames(seuratobject@meta.data)[seuratobject@meta.data$doro_annotation == i & (seuratobject@meta.data$doro_condition %in% vs)])
       g <- as.character(a_sub@meta.data$doro_condition)
       g <- factor(g, levels = c(vs1, vs2)) ###############################################
-      res[[i]] = scran::findMarkers(as.matrix(a_sub@assays$dorothea@scale.data), g)[[1]]
+      res[[i]] <- scran::findMarkers(as.matrix(a_sub@assays$dorothea@scale.data), g)[[1]]
       res[[i]] <- as.data.frame(res[[i]])
       r <- sapply(pws, function(pw) rcompanion::wilcoxonR(as.vector(a_sub@assays$dorothea@scale.data[pw,]), g))
       nms <- sapply(stringr::str_split(names(r), "\\."), function(x)x[1])
@@ -137,7 +137,7 @@ unfiltered_tf_activity_table <- function(activity_data_frame, CellsClusters) {
     spread(tf, avg) %>%
     data.frame(row.names = 1, check.names = FALSE)
 
-  summarized_viper_scores_df = t(summarized_viper_scores_df)
+  summarized_viper_scores_df <- t(summarized_viper_scores_df)
 
   return(summarized_viper_scores_df)
 }
@@ -232,21 +232,21 @@ plot_tf_activity <-
            tag_mapping,
            condition,
            out_path) {
-    tf_scores = as.matrix(tf_scores)
+    tf_scores <- as.matrix(tf_scores)
 
-    plot_width = ((ncol(tf_scores) * 15) / 25.4) + 5
-    plot_height = ((nrow(tf_scores) * 3) / 25.4) + 5
+    plot_width <- ((ncol(tf_scores) * 15) / 25.4) + 5
+    plot_height <- ((nrow(tf_scores) * 3) / 25.4) + 5
 
-    column_names_table = colnames(tf_scores)
-    column_names_tags = colnames(tag_mapping)
+    column_names_table <- colnames(tf_scores)
+    column_names_tags <- colnames(tag_mapping)
     if (length(column_names_tags) < length(column_names_table)) {
-      missing_col = setdiff(column_names_table, column_names_tags)
+      missing_col <- setdiff(column_names_table, column_names_tags)
       for (col in missing_col) {
-        tag_mapping[col] = "ns"
+        tag_mapping[col] <- "ns"
       }
     }
 
-    rownames(tf_scores) = gsub(".", "-", rownames(tf_scores), fixed = TRUE)
+    rownames(tf_scores) <- gsub(".", "-", rownames(tf_scores), fixed = TRUE)
 
     pdf(
       file = paste0(out_path, '/tf_activity_', condition, '.pdf'),
@@ -254,7 +254,7 @@ plot_tf_activity <-
       width = plot_width
     )
 
-    fh = function(x)
+    fh <- function(x)
       fastcluster::hclust(dist(x))
 
     p <-
@@ -290,17 +290,17 @@ plot_tf_activity <-
 #' @import tidyr
 #' @export
 add_node_type <- function(df) {
-  df = df %>%
+  df <- df %>%
     mutate(gene_A = ifelse(type_gene_A == "Ligand", paste0(gene_A, "|L"), gene_A))
-  df = df %>%
+  df <- df %>%
     mutate(gene_A = ifelse(type_gene_A == "Receptor", paste0(gene_A, "|R"), gene_A))
-  df = df %>%
+  df <- df %>%
     mutate(gene_A = ifelse(type_gene_A == "Transcription Factor", paste0(gene_A, "|TF"), gene_A))
-  df = df %>%
+  df <- df %>%
     mutate(gene_B = ifelse(type_gene_B == "Ligand", paste0(gene_B, "|L"), gene_B))
-  df = df %>%
+  df <- df %>%
     mutate(gene_B = ifelse(type_gene_B == "Receptor", paste0(gene_B, "|R"), gene_B))
-  df = df %>%
+  df <- df %>%
     mutate(gene_B = ifelse(type_gene_B == "Transcription Factor", paste0(gene_B, "|TF"), gene_B))
 }
 
@@ -320,11 +320,11 @@ add_node_type <- function(df) {
 combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_node_type = FALSE) {
 
   if (!is.data.frame(LR_prediction)) {
-    lr_table = read.csv(LR_prediction)
+    lr_table <- read.csv(LR_prediction)
     row.names(lr_table) <- lr_table$X
     lr_table$X <- NULL
   } else {
-    lr_table = LR_prediction
+    lr_table <- LR_prediction
   }
 
   lr_ligands <- unique(lr_table$gene_A)
@@ -358,11 +358,11 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
 combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition) {
 
   if (!is.data.frame(LR_prediction)) {
-    lr_table = read.csv(LR_prediction)
+    lr_table <- read.csv(LR_prediction)
     row.names(lr_table) <- lr_table$X
     lr_table$X <- NULL
   } else {
-    lr_table = LR_prediction
+    lr_table <- LR_prediction
   }
 
   complete_interactions <- rbind(tf_table, lr_table)
@@ -385,7 +385,7 @@ combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition)
 #' @export
 unique_condition_specific_tfs <- function(condition_tfs, out_path, log2fc) {
 
-  compared_tfs = data.frame(
+  compared_tfs <- data.frame(
     gene = character(),
     tag = character(),
     cluster = character()
@@ -393,17 +393,17 @@ unique_condition_specific_tfs <- function(condition_tfs, out_path, log2fc) {
 
   for (result_name in names(condition_tfs)) {
 
-    tf_condition_significant = condition_tfs[[result_name]]
-    tf_condition_significant = tf_condition_significant %>%
+    tf_condition_significant <- condition_tfs[[result_name]]
+    tf_condition_significant <- tf_condition_significant %>%
       filter(tag == "***") %>%
       filter(logFC > as.double(log2fc) | logFC < (0 - as.double(log2fc))) %>%
       subset(select = c("tf", "tag", "CellType")) %>%
       rename(gene = tf, cluster = CellType)
 
-    compared_tfs = rbind(compared_tfs, tf_condition_significant)
+    compared_tfs <- rbind(compared_tfs, tf_condition_significant)
   }
 
-  compared_tfs = compared_tfs[!duplicated(compared_tfs$gene),]
+  compared_tfs <- compared_tfs[!duplicated(compared_tfs$gene),]
   write.csv(compared_tfs, paste0(out_path, "/all_condition_specific_tfs.csv"), row.names = FALSE)
 
   return(compared_tfs)
@@ -425,7 +425,7 @@ unique_condition_specific_tfs <- function(condition_tfs, out_path, log2fc) {
 #' @export
 plot_condition_Heatmaps <- function(seuratobject, condition_annotation, celltype_annotation, filter_list, out_path) {
 
-  tmp_out_path = paste0(out_path, "/tmp")
+  tmp_out_path <- paste0(out_path, "/tmp")
   dir.create(tmp_out_path)
 
   DefaultAssay(object = seuratobject) <- "dorothea"
@@ -443,7 +443,7 @@ plot_condition_Heatmaps <- function(seuratobject, condition_annotation, celltype
     sub_object <- seuratobject_list[[name]]
     Idents(object = sub_object) <- "doro_condition"
 
-    number_of_conditions = length(levels(Idents(sub_object)))
+    number_of_conditions <- length(levels(Idents(sub_object)))
 
     viper_scores_df <- GetAssayData(sub_object, slot = "scale.data",
                                     assay = "dorothea") %>%
@@ -473,13 +473,96 @@ plot_condition_Heatmaps <- function(seuratobject, condition_annotation, celltype
       spread(tf, avg) %>%
       data.frame(row.names = 1, check.names = FALSE)
 
-    summarized_viper_scores_df = t(summarized_viper_scores_df)
+    summarized_viper_scores_df <- t(summarized_viper_scores_df)
 
     plot_tf_activity_without_mapping_condition(summarized_viper_scores_df, name, tmp_out_path)
   }
-  file_list = list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
+  file_list <- list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
   qpdf::pdf_combine(input = file_list,
                     output = paste0(out_path, "/condition_tf_heatmaps.pdf"))
 
   unlink(tmp_out_path, recursive = TRUE)
+}
+
+#' Create an empty dataframe with CrossTalkeR input table format
+#'
+#' @export
+create_empty_CTR_dataframe <- function() {
+  empty_df <- data.frame(
+    source = character(),
+    target = character(),
+    gene_A = character(),
+    gene_B = character(),
+    type_gene_A = character(),
+    type_gene_B = character(),
+    MeanLR = numeric()
+  )
+  return(empty_df)
+}
+
+#' Add entry to a dataframe in the CrossTalkeR input format
+#'
+#' @export
+add_entry_to_CTR_dataframe <- function(source, target, gene_A, gene_B, type_gene_A, type_gene_B, MeanLR) {
+  df <-
+    data.frame(
+      source,
+      target,
+      gene_A,
+      gene_B,
+      type_gene_A,
+      type_gene_B,
+      MeanLR
+    )
+  names(df) <-
+    c(
+      'source',
+      'target',
+      'gene_A',
+      'gene_B',
+      'type_gene_A',
+      'type_gene_B',
+      "MeanLR"
+    )
+
+  return(df)
+}
+
+
+#' Create an empty dataframe with CrossTalkeR input table format
+#'
+#' @export
+create_empty_Regulon_dataframe <- function() {
+  empty_df <- data.frame(
+    celltype = character(),
+    Receptor = character(),
+    TF = character(),
+    Target_Gene = character(),
+    TF_Score = numeric()
+  )
+  return(empty_df)
+}
+
+#' Add entry to a dataframe in the CrossTalkeR input format
+#'
+#' @export
+add_entry_to_Regulon_dataframe <- function(celltype, Receptor, TF, Target_Gene, TF_Score) {
+  df <-
+    data.frame(
+      celltype,
+      Receptor,
+      TF,
+      Target_Gene,
+      TF_Score
+    )
+  names(df) <-
+    c(
+      'celltype',
+      'Receptor',
+      'TF',
+      'Target_Gene',
+      'TF_Score'
+    )
+
+  return(df)
 }
