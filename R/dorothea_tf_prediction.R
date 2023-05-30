@@ -88,7 +88,7 @@ dorothea_tf_prediction <- function(seuratobject, out_path, confidence_level = c(
         }
       }
 
-      compared_tfs = compared_tfs[!duplicated(compared_tfs$gene),]
+      compared_tfs = compared_tfs[!duplicated(rownames(compared_tfs)),]
 
       name <- str_replace_all(name, "[,;.:-]", "_")
 
