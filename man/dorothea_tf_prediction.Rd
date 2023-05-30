@@ -13,7 +13,8 @@ dorothea_tf_prediction(
   celltype_Ident,
   comparison_list = NA,
   pvalue = 0.05,
-  log2fc = 0
+  log2fc = 0,
+  dorothea_results = NA
 )
 }
 \arguments{

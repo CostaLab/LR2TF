@@ -12,16 +12,23 @@
 #' @return A data frame with CrossTalkeR input
 #' @import OmnipathR
 #' @import dorothea
+#' @import dplyr
 #' @export
 generate_CrossTalkeR_input_significant_table <-
   function(tf_activities,
            confidence_level = c("A", "B", "C"),
-           gene_expression) {
+           gene_expression,
+           regulon = NA) {
 
-    dorothea_regulon_human <-
-      get(data("dorothea_hs", package = "dorothea"))
-    regulon <- dorothea_regulon_human %>%
-      dplyr::filter(confidence %in% confidence_level)
+    if (is.na(dorothea_results)[[1]]) {
+      dorothea_regulon_human <-
+        get(data("dorothea_hs", package = "dorothea"))
+      regulon <- dorothea_regulon_human %>%
+        dplyr::filter(confidence %in% confidence_level)
+    } else {
+      regulon <- regulon %>%
+        rename(tf=source)
+    }
 
     intercell <-
       import_intercell_network(
