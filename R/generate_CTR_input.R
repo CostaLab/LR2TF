@@ -20,7 +20,7 @@ generate_CrossTalkeR_input_significant_table <-
            gene_expression,
            regulon = NA) {
 
-    if (is.na(dorothea_results)[[1]]) {
+    if (is.na(regulon)[[1]]) {
       dorothea_regulon_human <-
         get(data("dorothea_hs", package = "dorothea"))
       regulon <- dorothea_regulon_human %>%
