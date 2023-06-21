@@ -30,7 +30,7 @@ dorothea_base_execution <- function(seuratobject, out_path, confidence_level = c
                                            eset.filter = FALSE, cores = 1,
                                            verbose = FALSE))
 
-  saveRDS(seuratobject, file = paste0(out_path, "/seuratobject_dorothea_results.RDS"))
+  saveRDS(seuratobject, file = paste0(out_path, "seuratobject_dorothea_results.RDS"))
 
   return(seuratobject)
 }
@@ -56,7 +56,7 @@ calculate_r_effectsize <- function(seuratobject, organism, out_path, celltype_an
   Idents(object = seuratobject) <- condition_annotation
   seuratobject[['doro_condition']] <- Idents(object = seuratobject)
   Idents(object = seuratobject) <- celltype_annotation
-  seuratobject[['doro_annotation']] <- Idents(object = seuratobject)
+  seuratobject[['tf_annotation']] <- Idents(object = seuratobject)
 
   vs_df_list <- list()
 
@@ -71,8 +71,8 @@ calculate_r_effectsize <- function(seuratobject, organism, out_path, celltype_an
 
     ###
     res <- list()
-    for (i in levels(seuratobject@meta.data$doro_annotation)) {
-      a_sub <- subset(seuratobject, cells = rownames(seuratobject@meta.data)[seuratobject@meta.data$doro_annotation == i & (seuratobject@meta.data$doro_condition %in% vs)])
+    for (i in levels(seuratobject@meta.data$tf_annotation)) {
+      a_sub <- subset(seuratobject, cells = rownames(seuratobject@meta.data)[seuratobject@meta.data$tf_annotation == i & (seuratobject@meta.data$doro_condition %in% vs)])
       g <- as.character(a_sub@meta.data$doro_condition)
       g <- factor(g, levels = c(vs1, vs2)) ###############################################
       res[[i]] <- scran::findMarkers(as.matrix(a_sub@assays$dorothea@scale.data), g)[[1]]
@@ -106,7 +106,7 @@ calculate_r_effectsize <- function(seuratobject, organism, out_path, celltype_an
     })
 
     vs_df_list[[glue("{vs1} vs {vs2}")]] <- res_df
-    write.csv(res_df, paste0(out_path, "/all_tfs_", glue("{vs1}_vs_{vs2}", ".csv")))
+    write.csv(res_df, paste0(out_path, "all_tfs_", glue("{vs1}_vs_{vs2}", ".csv")))
   }
   return(vs_df_list)
 }
@@ -175,7 +175,7 @@ save_unfiltered_tf_scores <- function(viper_scores_df, CellsClusters, condition,
     spread(tf, avg) %>%
     data.frame(row.names = 1, check.names = FALSE)
   tf_scores <- t(summarized_viper_scores_df)
-  write.csv(tf_scores, file = paste0(out_path, '/unfiltered_tf_scores', '_', condition, '.csv'))
+  write.csv(tf_scores, file = paste0(out_path, 'unfiltered_tf_scores', '_', condition, '.csv'))
 }
 
 
@@ -206,7 +206,7 @@ save_variable_tf_scores <- function(tf_scores, condition, out_path) {
     spread(tf, avg) %>%
     data.frame(row.names = 1, check.names = FALSE)
   tf_scores <- t(summarized_viper_scores_df_all)
-  write.csv(tf_scores, file = paste0(out_path, '/variable_tf_scores', '_', condition, '.csv'))
+  write.csv(tf_scores, file = paste0(out_path, 'variable_tf_scores', '_', condition, '.csv'))
 
   return(tf_scores)
 }
@@ -249,7 +249,7 @@ plot_tf_activity <-
     rownames(tf_scores) <- gsub(".", "-", rownames(tf_scores), fixed = TRUE)
 
     pdf(
-      file = paste0(out_path, '/tf_activity_', condition, '.pdf'),
+      file = paste0(out_path, 'tf_activity_', condition, '.pdf'),
       height = plot_height,
       width = plot_width
     )
@@ -339,7 +339,7 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
   if (add_node_type) {
     complete_interactions <- add_node_type(complete_interactions)
   }
-  write.csv(complete_interactions, paste0(out_path, "/CTR_input_", condition, ".csv"), row.names = FALSE)
+  write.csv(complete_interactions, paste0(out_path, "CTR_input_", condition, ".csv"), row.names = FALSE)
   return(complete_interactions)
 }
 
@@ -368,7 +368,7 @@ combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition)
   complete_interactions <- rbind(tf_table, lr_table)
   complete_interactions <- add_node_type(complete_interactions)
 
-  write.csv(complete_interactions, paste0(out_path, "/CTR_input_", condition, ".csv"), row.names = FALSE)
+  write.csv(complete_interactions, paste0(out_path, "CTR_input_", condition, ".csv"), row.names = FALSE)
 }
 
 
@@ -404,7 +404,7 @@ unique_condition_specific_tfs <- function(condition_tfs, out_path, log2fc) {
   }
 
   compared_tfs <- compared_tfs[!duplicated(compared_tfs$gene),]
-  write.csv(compared_tfs, paste0(out_path, "/all_condition_specific_tfs.csv"), row.names = FALSE)
+  write.csv(compared_tfs, paste0(out_path, "all_condition_specific_tfs.csv"), row.names = FALSE)
 
   return(compared_tfs)
 }
@@ -425,7 +425,7 @@ unique_condition_specific_tfs <- function(condition_tfs, out_path, log2fc) {
 #' @export
 plot_condition_Heatmaps <- function(seuratobject, condition_annotation, celltype_annotation, filter_list, out_path) {
 
-  tmp_out_path <- paste0(out_path, "/tmp")
+  tmp_out_path <- paste0(out_path, "tmp")
   dir.create(tmp_out_path)
 
   DefaultAssay(object = seuratobject) <- "dorothea"
@@ -434,9 +434,9 @@ plot_condition_Heatmaps <- function(seuratobject, condition_annotation, celltype
   Idents(object = seuratobject) <- condition_annotation
   seuratobject[['doro_condition']] <- Idents(object = seuratobject)
   Idents(object = seuratobject) <- celltype_annotation
-  seuratobject[['doro_annotation']] <- Idents(object = seuratobject)
+  seuratobject[['tf_annotation']] <- Idents(object = seuratobject)
 
-  seuratobject_list <- SplitObject(seuratobject, split.by = "doro_annotation")
+  seuratobject_list <- SplitObject(seuratobject, split.by = "tf_annotation")
 
   for (name in names(seuratobject_list)) {
 
@@ -479,7 +479,7 @@ plot_condition_Heatmaps <- function(seuratobject, condition_annotation, celltype
   }
   file_list <- list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
   qpdf::pdf_combine(input = file_list,
-                    output = paste0(out_path, "/condition_tf_heatmaps.pdf"))
+                    output = paste0(out_path, "condition_tf_heatmaps.pdf"))
 
   unlink(tmp_out_path, recursive = TRUE)
 }
@@ -565,4 +565,117 @@ add_entry_to_Regulon_dataframe <- function(celltype, Receptor, TF, Target_Gene, 
     )
 
   return(df)
+}
+
+#' Convert Seurat object to anndata object and save anndata object file
+#'
+#' @param seuratobject Input Seurat Object
+#' @param out_path Output path to save results
+#' @import sceasy
+#' @export
+convert_seurat_to_anndata <- function(seuratobject, out_path) {
+  sceasy::convertFormat(seuratobject, from = "seurat", to = "anndata", outFile = paste0(out_path, "anndata_object.h5ad"))
+}
+
+
+#' Run viper analysis with the decoupleR package
+#'
+#' @param seuratobject Input Seurat Object
+#' @param regulon table with weighted TF to target gene interactions
+#' @return seuratobject
+#' #' @import decoupleR
+#' @export
+decoupleR_viper_analysis <- function(seuratobject, regulon) {
+  mat <- as.matrix(seuratobject@assays$RNA@data)
+  tf_activities <- decoupleR::run_viper(mat = mat, network = regulon, .source = 'source', .target = 'target', .mor = 'weight', verbose = TRUE)
+  seuratobject[['tf_activities']] <- tf_activities %>%
+    pivot_wider(id_cols = 'source', names_from = 'condition',
+                values_from = 'score') %>%
+    column_to_rownames('source') %>%
+    Seurat::CreateAssayObject(.)
+
+  return(seuratobject)
+}
+
+
+#' Loading old dorothea package regulons (default if no regulon is provided)
+#'
+#' @param organism of input data
+#' @return regulon
+#' @import dorothea
+#' @export
+load_dorothea_regulon <- function(organism) {
+  if (organism == "human") {
+    dorothea_regulon_human <- get(data("dorothea_hs", package = "dorothea"))
+    regulon <- dorothea_regulon_human %>%
+      dplyr::filter(confidence %in% c("A", "B", "C", "D")) %>%
+      rename(source = tf, weight = mor)
+  }
+  else if (organism == "mouse") {
+    dorothea_regulon_mouse <- get(data("dorothea_mm", package = "dorothea"))
+    regulon <- dorothea_regulon_mouse %>%
+      dplyr::filter(confidence %in% c("A", "B", "C", "D")) %>%
+      rename(source = tf, weight = mor)
+  } else {
+    print("only human and mouse regulons can be loaded by default!")
+  }
+  return(regulon)
+}
+
+#' Run decoupleR python script.
+#'
+#' To run decoupleR python version scanpy, pandas, and decoupleR python libraries need to be installed.
+#'
+#' @param seuratobject Input Seurat Object
+#' @param out_path Output path to save results
+#' @import sceasy
+#' @export
+run_py_decoupler <- function(object_path, regulon_path, out_path) {
+  reticulate::source_python(system.file("python_scripts/run_decoupleR.py", package = "LR2TF"))
+  run_decoupler(object_path, regulon_path, out_path)
+}
+
+
+#' Loading old dorothea package regulons (default if no regulon is provided)
+#'
+#' @param arguments_list list of user defined arguments
+#' @return val_arguments validated list of arguments
+#' @export
+validate_input_arguments <- function(arguments_list) {
+  if (is.null(arguments_list$out_path)) {
+    print("Please provide an output path")
+  } else {
+    if (substring(arguments_list$out_path, length(arguments_list$out_path) - 1, length(arguments_list$out_path)) != "/") {
+      arguments_list$out_path <- paste0(arguments_list$out_path, "/")
+    }
+  }
+  if (is.null(arguments_list$celltype)) {
+    print("Please provide the name of the metadata field containing cell type annotations")
+  }
+  if (is.null(arguments_list$condition)) {
+    print("Please provide the name of the metadata field containing condition annotations")
+  }
+  if (is.null(arguments_list$organism)) {
+    arguments_list$organism <- "human"
+  }
+  if (is.null(arguments_list$comparison_list)) {
+    arguments_list$comparison_list <- NA
+  }
+  if (is.null(arguments_list$logfc)) {
+    arguments_list$logfc <- 0.0
+  }
+  if (is.null(arguments_list$pval)) {
+    arguments_list$pval <- 0.05
+  }
+  if (is.null(arguments_list$reg)) {
+    arguments_list$reg = load_dorothea_regulon(arguments_list$organism)
+  } else {
+     if (typeof( arguments_list$reg) == "character") {
+       arguments_list$reg <-read.csv(arguments_list$reg, header = TRUE)
+    }
+    if(!all(c("source", "target", "weight") %in% names(regulon_mouse))){
+      stop("Not all necessary columns found in regulon table! Please make sure that the regulon has the columns source, target and weight!")
+    }
+  }
+  return(arguments_list)
 }

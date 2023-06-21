@@ -11,7 +11,7 @@
 #' @export
 plot_condition_tf_activities <-
   function(tf_activity_tables, out_path) {
-    tmp_out_path = paste0(out_path, "/tmp")
+    tmp_out_path = paste0(out_path, "tmp")
     dir.create(tmp_out_path)
 
     for (nm in names(tf_activity_tables)) {
@@ -46,7 +46,7 @@ plot_condition_tf_activities <-
 
     file_list = list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
     qpdf::pdf_combine(input = file_list,
-                      output = paste0(out_path, "/cluster_condition_activity_difference.pdf"))
+                      output = paste0(out_path, "cluster_condition_activity_difference.pdf"))
 
     unlink(tmp_out_path, recursive = TRUE)
   }
@@ -64,7 +64,7 @@ plot_condition_tf_activities <-
 #' @export
 plot_condition_tf_activities_compressed <-
   function(tf_activity_tables, out_path) {
-    tmp_out_path = paste0(out_path, "/tmp")
+    tmp_out_path = paste0(out_path, "tmp")
     dir.create(tmp_out_path)
 
     for (nm in names(tf_activity_tables)) {
@@ -90,7 +90,7 @@ plot_condition_tf_activities_compressed <-
 
     file_list = list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
     qpdf::pdf_combine(input = file_list,
-                      output = paste0(out_path, "/cluster_condition_activity_difference_compressed.pdf"))
+                      output = paste0(out_path, "cluster_condition_activity_difference_compressed.pdf"))
 
     unlink(tmp_out_path, recursive = TRUE)
   }
@@ -136,7 +136,7 @@ plot_highly_variable_tfs <-
 
     pdf(
       file = paste0(out_path,
-                    '/tf_activity_top20_variable_', condition, '.pdf'),
+                    'tf_activity_top20_variable_', condition, '.pdf'),
       width = plot_width,
       height = plot_height
     )
@@ -183,7 +183,7 @@ plot_tf_activity_compressed <-
 
     tf_scores = as.matrix(tf_scores)
     pdf(
-      file = paste0(out_path, '/tf_activity_compressed_', condition, '.pdf'),
+      file = paste0(out_path, 'tf_activity_compressed_', condition, '.pdf'),
       height = plot_height,
       width = plot_width
     )
@@ -295,7 +295,7 @@ plot_tf_activity_without_mapping_condition <-
     rownames(tf_scores) = gsub(".", "-", rownames(tf_scores), fixed = TRUE)
 
     pdf(
-      file = paste0(out_path, '/tf_activity_', cluster, '.pdf'),
+      file = paste0(out_path, 'tf_activity_', cluster, '.pdf'),
       height = plot_height,
       width = plot_width
     )

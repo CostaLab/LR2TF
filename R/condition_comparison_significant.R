@@ -19,7 +19,7 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
   Idents(object = seuratobject) <- condition_annotation
   seuratobject[['doro_condition']] <- Idents(object=seuratobject)
   Idents(object = seuratobject) <- celltype_annotation
-  seuratobject[['doro_annotation']] <- Idents(object=seuratobject)
+  seuratobject[['tf_annotation']] <- Idents(object=seuratobject)
 
   vs_df_list <- list()
 
@@ -34,8 +34,8 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
 
     ###
     res <- list()
-    for(i in levels(seuratobject@meta.data$doro_annotation)){
-      a_sub <- subset(seuratobject, cells=rownames(seuratobject@meta.data)[seuratobject@meta.data$doro_annotation==i & (seuratobject@meta.data$doro_condition %in% vs)])
+    for(i in levels(seuratobject@meta.data$tf_annotation)){
+      a_sub <- subset(seuratobject, cells=rownames(seuratobject@meta.data)[seuratobject@meta.data$tf_annotation==i & (seuratobject@meta.data$doro_condition %in% vs)])
       g <- as.character(a_sub@meta.data$doro_condition)
       g <- factor(g, levels=c(vs1, vs2)) ###############################################
       res[[i]] <- scran::findMarkers(as.matrix(a_sub@assays$dorothea@scale.data), g)[[1]]
@@ -76,9 +76,9 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
     end_res <- res_df
 
     vs_df_list[[glue("{vs1} vs {vs2}")]] <- end_res
-    write.csv(res_df,paste0(out_path,"/all_tfs_",glue("{vs1}_vs_{vs2}", ".csv")))
+    write.csv(res_df,paste0(out_path,"all_tfs_",glue("{vs1}_vs_{vs2}", ".csv")))
   }
 
-  saveRDS(vs_df_list, file = paste0(out_path, "/comparison_dfs.RDS"))
+  saveRDS(vs_df_list, file = paste0(out_path, "comparison_dfs.RDS"))
   return(vs_df_list)
 }

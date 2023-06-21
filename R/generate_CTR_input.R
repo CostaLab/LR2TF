@@ -362,7 +362,6 @@ generate_CrossTalkeR_input_mouse_significant_table <-
 #' @import dplyr
 #' @import tibble
 #' @export
-
 generate_intracellular_network <-
   function(tf_activities,
            confidence_level = c("A", "B", "C"),

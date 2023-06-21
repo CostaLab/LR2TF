@@ -11,13 +11,13 @@
 #' @return A data frame with transcription factor activity scores per cell type
 #' @export
 get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_significant, pval, log2fc) {
-  single_result_path <- paste0(out_path, '/', condition)
+  single_result_path <- paste0(out_path, condition)
   dir.create(single_result_path)
 
   DefaultAssay(object = seuratobject) <- "dorothea"
   seuratobject <- ScaleData(seuratobject)
 
-  Idents(object = seuratobject) <- "doro_annotation"
+  Idents(object = seuratobject) <- "tf_annotation"
 
   number_of_clusters = length(levels(Idents(seuratobject)))
 
@@ -159,13 +159,13 @@ get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_
 #' @return A data frame with transcription factor activity scores per cell type
 #' @export
 get_significant_tfs_single <- function(seuratobject, condition, out_path) {
-  single_result_path <- paste0(out_path, '/', condition)
+  single_result_path <- paste0(out_path, condition)
   dir.create(single_result_path)
 
   DefaultAssay(object = seuratobject) <- "dorothea"
   seuratobject <- ScaleData(seuratobject)
 
-  Idents(object = seuratobject) <- "doro_annotation"
+  Idents(object = seuratobject) <- "tf_annotation"
 
   number_of_clusters = length(levels(Idents(seuratobject)))
 
