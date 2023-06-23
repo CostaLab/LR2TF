@@ -14,7 +14,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_
   single_result_path <- paste0(out_path, condition)
   dir.create(single_result_path)
 
-  DefaultAssay(object = seuratobject) <- "dorothea"
+  DefaultAssay(object = seuratobject) <- "tf_activities"
   seuratobject <- ScaleData(seuratobject)
 
   Idents(object = seuratobject) <- "tf_annotation"
@@ -66,7 +66,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_
   tag_mapping[is.na(tag_mapping)] <- "ns"
 
   viper_scores_df <- GetAssayData(seuratobject, slot = "scale.data",
-                                  assay = "dorothea") %>%
+                                  assay = "tf_activities") %>%
     data.frame(check.names = F) %>%
     t()
 
@@ -111,8 +111,8 @@ get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_
                    single_result_path)
 
   rownames(summarized_viper_scores_df) = gsub(".", "-", rownames(summarized_viper_scores_df), fixed = TRUE)
-  seuratobject.markers = seuratobject.markers[(seuratobject.markers$tag == "***"),]
-  seuratobject.markers = seuratobject.markers[(seuratobject.markers$log_fc_tag == "***"),]
+  #seuratobject.markers = seuratobject.markers[(seuratobject.markers$tag == "***"),]
+  #seuratobject.markers = seuratobject.markers[(seuratobject.markers$log_fc_tag == "***"),]
 
   map_z_value_filtered <- function(gene, cluster) {
     if (gene %in% rownames(summarized_viper_scores_df)) {
@@ -158,11 +158,11 @@ get_significant_tfs <- function(seuratobject, condition, out_path, tf_condition_
 #' @param tf_condition_significant condition comparison results
 #' @return A data frame with transcription factor activity scores per cell type
 #' @export
-get_significant_tfs_single <- function(seuratobject, condition, out_path) {
+get_significant_tfs_single <- function(seuratobject, condition, out_path, pval, log2fc) {
   single_result_path <- paste0(out_path, condition)
   dir.create(single_result_path)
 
-  DefaultAssay(object = seuratobject) <- "dorothea"
+  DefaultAssay(object = seuratobject) <- "tf_activities"
   seuratobject <- ScaleData(seuratobject)
 
   Idents(object = seuratobject) <- "tf_annotation"
@@ -203,8 +203,10 @@ get_significant_tfs_single <- function(seuratobject, condition, out_path) {
   })
 
   tag_mapping = seuratobject.markers[c("gene", "tag", "log_fc_tag", "cluster")]
-  tag_mapping = tag_mapping[(tag_mapping$tag == "***"),]
-  tag_mapping = tag_mapping[(tag_mapping$log_fc_tag == "***"),]
+  tag_mapping = filter(tag_mapping, p_val_adj < as.double(pval))
+  tag_mapping = filter(tag_mapping, avg_log2FC > as.double(log2fc) | avg_log2FC < (0 - as.double(log2fc)))
+  #tag_mapping = tag_mapping[(tag_mapping$tag == "***"),]
+  #tag_mapping = tag_mapping[(tag_mapping$log_fc_tag == "***"),]
   tag_mapping = dcast(tag_mapping, gene ~ cluster, value.var = "tag")
   row.names(tag_mapping) = tag_mapping$gene
   tag_mapping$gene = NULL
@@ -212,7 +214,7 @@ get_significant_tfs_single <- function(seuratobject, condition, out_path) {
   tag_mapping[is.na(tag_mapping)] <- "ns"
 
   viper_scores_df <- GetAssayData(seuratobject, slot = "scale.data",
-                                  assay = "dorothea") %>%
+                                  assay = "tf_activities") %>%
     data.frame(check.names = F) %>%
     t()
 
@@ -255,8 +257,8 @@ get_significant_tfs_single <- function(seuratobject, condition, out_path) {
                    single_result_path)
 
   rownames(summarized_viper_scores_df) = gsub(".", "-", rownames(summarized_viper_scores_df), fixed = TRUE)
-  seuratobject.markers = seuratobject.markers[(seuratobject.markers$tag == "***"),]
-  seuratobject.markers = seuratobject.markers[(seuratobject.markers$log_fc_tag == "***"),]
+  #seuratobject.markers = seuratobject.markers[(seuratobject.markers$tag == "***"),]
+  #seuratobject.markers = seuratobject.markers[(seuratobject.markers$log_fc_tag == "***"),]
 
   map_z_value_filtered <- function(gene, cluster) {
     if (gene %in% rownames(summarized_viper_scores_df)) {

@@ -6,7 +6,6 @@
 \usage{
 generate_CrossTalkeR_input_significant_table(
   tf_activities,
-  confidence_level = c("A", "B", "C"),
   gene_expression,
   regulon = NA
 )

@@ -6,11 +6,13 @@
 #' @param tf_activities matrix with TF activities for each cell in the scRMA-seq data
 #' @param arguments_list named R list with custom options for the analysis
 #' @export
-dorothea_tf_prediction <- function(seuratobject, tf_activities = NA, arguments_list) {
+tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_list) {
 
   if (typeof(seuratobject) == "character") {
     seuratobject <- readRDS(seuratobject)
   }
+
+  arguments_list <- validate_input_arguments(arguments_list)
 
   Idents(object = seuratobject) <- arguments_list$celltype
   dir.create(arguments_list$out_path)
@@ -23,7 +25,7 @@ dorothea_tf_prediction <- function(seuratobject, tf_activities = NA, arguments_l
     }
 
     tf_acticities <- CreateAssayObject(data = tf_activities)
-    seuratobject[["tf_acticities"]] <- tf_acticities
+    seuratobject[["tf_activities"]] <- tf_acticities
   }
 
   Idents(object = seuratobject) <- arguments_list$condition
@@ -36,24 +38,53 @@ dorothea_tf_prediction <- function(seuratobject, tf_activities = NA, arguments_l
   if (is.na(arguments_list$comparison_list)[[1]]) {
     seuratobject[['tf_annotation']] <- Idents(object = seuratobject)
     result_list <- list()
+    gene_expression_list <- list()
+    CTR_cluster_list <- list()
+    intranet_cluster_list <- list()
 
     Idents(object = seuratobject) <- arguments_list$condition
     name <- levels(seuratobject)
     name <- str_replace_all(name, "[,;.:-]", "_")
 
     seuratobject.averages <- AverageExpression(seuratobject, group.by = arguments_list$celltype, assays = "RNA")
-    write.csv(seuratobject.averages[["RNA"]], file =
-      paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
-             name, '.csv'))
+    # write.csv(seuratobject.averages[["RNA"]], file =
+    #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
+    #          name, '.csv'))
 
-    tf_activity_scores = get_significant_tfs_single(seuratobject, name, arguments_list$out_path)
+    tf_activity_scores = get_significant_tfs_single(seuratobject, name, arguments_list$out_path, pval = arguments_list$pval, log2fc = arguments_list$logfc)
     result_list[[name]] = tf_activity_scores
-    result_list[[paste0(name, "_average_expression")]] = seuratobject.averages[["RNA"]]
+    gene_expression_list[[paste0(name, "_average_expression")]] = seuratobject.averages[["RNA"]]
 
-    saveRDS(result_list, file = paste0(arguments_list$out_path, "result_list.RDS"))
+    if (arguments_list$organism == "human") {
+      CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_significant_table(tf_activity_scores[["cluster"]],
+                                                                               gene_expression_list[[paste0(name, "_average_expression")]],
+                                                                               arguments_list$reg)
+    }else {
+      CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_mouse_significant_table(tf_activity_scores[["cluster"]],
+                                                                                     gene_expression_list[[paste0(name, "_average_expression")]],
+                                                                                     arguments_list$reg)
+    }
+    intranet_cluster_list[[name]] <- generate_intracellular_network(tf_activity_scores[["cluster"]],
+                                                            gene_expression_list[[paste0(name, "_average_expression")]],
+                                                            arguments_list$reg,
+                                                            arguments_list$organism)
+
+    tf <- new("TFObj",
+              tf_activities_condition = list(),
+              tf_activities_cluster = result_list,
+              average_gene_expression = gene_expression_list,
+              regulon = arguments_list$reg,
+              CTR_input_condition = list(),
+              CTR_input_cluster = CTR_cluster_list,
+              intracellular_network_condition = list(),
+              intracellular_network_cluster = intranet_cluster_list)
+
+    saveRDS(tf, file = paste0(arguments_list$out_path, "result_list.RDS"))
     saveRDS(seuratobject, file = paste0(out_arguments_list$out_pathpath, "result_seurat_object.RDS"))
-    return(result_list)
-  } else {
+    return(tf)
+  }
+
+  else {
     out_path_compared <- paste0(arguments_list$out_path, "compared")
     dir.create(out_path_compared)
     compared_significant_tfs <- condition_comparison_significant(seuratobject, out_path_compared, arguments_list$celltype, arguments_list$condition, arguments_list$comparison_list)
@@ -64,7 +95,13 @@ dorothea_tf_prediction <- function(seuratobject, tf_activities = NA, arguments_l
     seuratobject[['tf_annotation']] <- Idents(object = seuratobject)
     seuratobject_list <- SplitObject(seuratobject, split.by = arguments_list$condition)
 
-    result_list <- list()
+    result_condition_list <- list()
+    result_cluster_list <- list()
+    gene_expression_list <- list()
+    CTR_condition_list <- list()
+    CTR_cluster_list <- list()
+    intranet_condition_list <- list()
+    intranet_cluster_list <- list()
     for (name in names(seuratobject_list)) {
       sub_object <- seuratobject_list[[name]]
 
@@ -91,17 +128,59 @@ dorothea_tf_prediction <- function(seuratobject, tf_activities = NA, arguments_l
       name <- str_replace_all(name, "[,;.:-]", "_")
 
       sub_object.averages <- AverageExpression(sub_object, group.by = arguments_list$celltype, assays = "RNA")
-      write.csv(sub_object.averages[["RNA"]], file =
-        paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
-               name, '.csv'))
+      # write.csv(sub_object.averages[["RNA"]], file =
+      #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
+      #          name, '.csv'))
 
-      tf_activity_scores = get_significant_tfs(sub_object, name, arguments_list$out_path, compared_tfs, pval = arguments_list$pval, log2fc = arguments_list$logfc)
-      result_list[[name]] = tf_activity_scores
-      result_list[[paste0(name, "_average_expression")]] = sub_object.averages[["RNA"]]
+      tf_activity_scores = get_significant_tfs(sub_object,
+                                               name,
+                                               arguments_list$out_path,
+                                               compared_tfs,
+                                               pval = arguments_list$pval,
+                                               log2fc = arguments_list$logfc)
+      result_condition_list[[name]] <- tf_activity_scores[["condition"]]
+      result_cluster_list[[name]] <- tf_activity_scores[["cluster"]]
+      gene_expression_list[[paste0(name, "_average_expression")]] = sub_object.averages[["RNA"]]
+
+      if (arguments_list$organism == "human") {
+        CTR_condition_list[[name]] <- generate_CrossTalkeR_input_significant_table(tf_activity_scores[["condition"]],
+                                                                                   gene_expression_list[[paste0(name, "_average_expression")]],
+                                                                                   arguments_list$reg)
+        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_significant_table(tf_activity_scores[["cluster"]],
+                                                                                 gene_expression_list[[paste0(name, "_average_expression")]],
+                                                                                 arguments_list$reg)
+      }else {
+        CTR_condition_list[[name]] <- generate_CrossTalkeR_input_mouse_significant_table(tf_activity_scores[["condition"]],
+                                                                                         gene_expression_list[[paste0(name, "_average_expression")]],
+                                                                                         arguments_list$reg)
+        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_mouse_significant_table(tf_activity_scores[["cluster"]],
+                                                                                       gene_expression_list[[paste0(name, "_average_expression")]],
+                                                                                       arguments_list$reg)
+      }
+      intranet_condition_list[[name]] <- generate_intracellular_network(tf_activity_scores[["condition"]],
+                                                                gene_expression_list[[paste0(name, "_average_expression")]],
+                                                                arguments_list$reg,
+                                                                arguments_list$organism)
+      intranet_cluster_list[[name]] <- generate_intracellular_network(tf_activity_scores[["cluster"]],
+                                                              gene_expression_list[[paste0(name, "_average_expression")]],
+                                                              arguments_list$reg,
+                                                              arguments_list$organism)
     }
-    saveRDS(result_list, file = paste0(arguments_list$out_path, "result_list.RDS"))
+
+    tf <- new("TFObj",
+              tf_activities_condition = result_condition_list,
+              tf_activities_cluster = result_cluster_list,
+              average_gene_expression = gene_expression_list,
+              regulon = arguments_list$reg,
+              CTR_input_condition = CTR_condition_list,
+              CTR_input_cluster = CTR_cluster_list,
+              intracellular_network_condition = intranet_condition_list,
+              intracellular_network_cluster = intranet_cluster_list)
+
+    saveRDS(tf, file = paste0(arguments_list$out_path, "result_list.RDS"))
     saveRDS(seuratobject, file = paste0(arguments_list$out_path, "result_seurat_object.RDS"))
-    return(result_list)
+
+    return(tf)
   }
 
 }

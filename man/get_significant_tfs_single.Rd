@@ -4,7 +4,7 @@
 \alias{get_significant_tfs_single}
 \title{Run DoRothEA analysis to get significant transcription factors}
 \usage{
-get_significant_tfs_single(seuratobject, condition, out_path)
+get_significant_tfs_single(seuratobject, condition, out_path, pval, log2fc)
 }
 \arguments{
 \item{seuratobject}{Input Seurat Object}

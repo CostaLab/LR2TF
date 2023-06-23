@@ -11,7 +11,7 @@
 #' @export
 plot_condition_tf_activities <-
   function(tf_activity_tables, out_path) {
-    tmp_out_path = paste0(out_path, "tmp")
+    tmp_out_path = paste0(out_path, "/tmp")
     dir.create(tmp_out_path)
 
     for (nm in names(tf_activity_tables)) {
@@ -46,7 +46,7 @@ plot_condition_tf_activities <-
 
     file_list = list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
     qpdf::pdf_combine(input = file_list,
-                      output = paste0(out_path, "cluster_condition_activity_difference.pdf"))
+                      output = paste0(out_path, "/cluster_condition_activity_difference.pdf"))
 
     unlink(tmp_out_path, recursive = TRUE)
   }
@@ -64,7 +64,7 @@ plot_condition_tf_activities <-
 #' @export
 plot_condition_tf_activities_compressed <-
   function(tf_activity_tables, out_path) {
-    tmp_out_path = paste0(out_path, "tmp")
+    tmp_out_path = paste0(out_path, "/tmp")
     dir.create(tmp_out_path)
 
     for (nm in names(tf_activity_tables)) {
@@ -90,7 +90,7 @@ plot_condition_tf_activities_compressed <-
 
     file_list = list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
     qpdf::pdf_combine(input = file_list,
-                      output = paste0(out_path, "cluster_condition_activity_difference_compressed.pdf"))
+                      output = paste0(out_path, "/cluster_condition_activity_difference_compressed.pdf"))
 
     unlink(tmp_out_path, recursive = TRUE)
   }

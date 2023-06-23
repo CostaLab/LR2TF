@@ -6,8 +6,8 @@
 \usage{
 generate_intracellular_network(
   tf_activities,
-  confidence_level = c("A", "B", "C"),
   gene_expression,
+  regulon,
   organism = "human"
 )
 }

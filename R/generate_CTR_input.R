@@ -16,19 +16,11 @@
 #' @export
 generate_CrossTalkeR_input_significant_table <-
   function(tf_activities,
-           confidence_level = c("A", "B", "C"),
            gene_expression,
            regulon = NA) {
 
-    if (is.na(regulon)[[1]]) {
-      dorothea_regulon_human <-
-        get(data("dorothea_hs", package = "dorothea"))
-      regulon <- dorothea_regulon_human %>%
-        dplyr::filter(confidence %in% confidence_level)
-    } else {
-      regulon <- regulon %>%
-        rename(tf=source)
-    }
+    regulon <- regulon %>%
+      rename(tf = source)
 
     intercell <-
       import_intercell_network(
@@ -36,16 +28,6 @@ generate_CrossTalkeR_input_significant_table <-
         transmitter_param = list(categories = c('ligand'))
       )
     ligands <- list(intercell$source_genesymbol)
-
-    # posttranslational <-
-    #   import_post_translational_interactions(organism = '9606',
-    #                                          genesymbol = TRUE)
-    # posttranslational = aggregate(posttranslational$source_genesymbol ~ posttranslational$target_genesymbol,
-    #                               FUN = c)
-    # colnames(posttranslational) <- c('tf', 'receptors')
-    # posttranslational = posttranslational %>%
-    #   remove_rownames %>%
-    #   tibble::column_to_rownames(var = 'tf')
 
     R2TF <- aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
     colnames(R2TF) <- c('tf', 'receptors')
@@ -60,37 +42,12 @@ generate_CrossTalkeR_input_significant_table <-
       remove_rownames %>%
       tibble::column_to_rownames(var = 'tf')
 
-    output_df <- data.frame(
-      source = character(),
-      target = character(),
-      gene_A = character(),
-      gene_B = character(),
-      type_gene_A = character(),
-      type_gene_B = character(),
-      MeanLR = numeric()
-    )
+    output_df <- create_empty_CTR_dataframe()
 
     for (row in 1:nrow(tf_activities)) {
 
-      r_tf <- data.frame(
-        source = character(),
-        target = character(),
-        gene_A = character(),
-        gene_B = character(),
-        type_gene_A = character(),
-        type_gene_B = character(),
-        MeanLR = double()
-      )
-
-      tf_l <- data.frame(
-        source = character(),
-        target = character(),
-        gene_A = character(),
-        gene_B = character(),
-        type_gene_A = character(),
-        type_gene_B = character(),
-        MeanLR = double()
-      )
+      r_tf <- create_empty_CTR_dataframe()
+      tf_l <- create_empty_CTR_dataframe()
 
       if (tf_activities[row, "z_score"] > 0) {
         tf <- as.character(tf_activities[row, "gene"])
@@ -108,52 +65,26 @@ generate_CrossTalkeR_input_significant_table <-
             }
 
             if (expressed == TRUE) {
-              df <-
-                data.frame(
-                  tf_activities[row, "cluster"],
-                  tf_activities[row, "cluster"],
-                  tf_activities[row, "gene"],
-                  ligand,
-                  'Transcription Factor',
-                  'Ligand',
-                  tf_activities[row, "z_score"]
-                )
-              names(df) <-
-                c(
-                  'source',
-                  'target',
-                  'gene_A',
-                  'gene_B',
-                  'type_gene_A',
-                  'type_gene_B',
-                  "MeanLR"
-                )
+              df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
+                                               tf_activities[row, "cluster"],
+                                               tf_activities[row, "gene"],
+                                               ligand,
+                                               'Transcription Factor',
+                                               'Ligand',
+                                               tf_activities[row, "z_score"])
               tf_l <- rbind(tf_l, df)
             }
           }
         }
         if (length(receptors[[1]]) > 0) {
           for (receptor in receptors[[1]]) {
-            df <-
-              data.frame(
-                tf_activities[row, "cluster"],
-                tf_activities[row, "cluster"],
-                receptor,
-                tf_activities[row, "gene"],
-                'Receptor',
-                'Transcription Factor',
-                tf_activities[row, "z_score"]
-              )
-            names(df) <-
-              c(
-                'source',
-                'target',
-                'gene_A',
-                'gene_B',
-                'type_gene_A',
-                'type_gene_B',
-                "MeanLR"
-              )
+            df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
+                                             tf_activities[row, "cluster"],
+                                             receptor,
+                                             tf_activities[row, "gene"],
+                                             'Receptor',
+                                             'Transcription Factor',
+                                             tf_activities[row, "z_score"])
             r_tf <- rbind(r_tf, df)
           }
         }
@@ -172,6 +103,7 @@ generate_CrossTalkeR_input_significant_table <-
     return(output_df)
   }
 
+
 #' Generate CrossTalkeR input from significant tf table for mouse data
 #'
 #' This function loads the transcription factor activity table/data frame
@@ -187,36 +119,11 @@ generate_CrossTalkeR_input_significant_table <-
 #' @import OmnipathR
 #' @import dorothea
 #' @export
-
 generate_CrossTalkeR_input_mouse_significant_table <-
   function(tf_activities,
-           confidence_level = c("A", "B", "C"),
-           gene_expression) {
-
-    dorothea_regulon_human <-
-      get(data("dorothea_mm", package = "dorothea"))
-    regulon <- dorothea_regulon_human %>%
-      dplyr::filter(confidence %in% confidence_level)
-
+           gene_expression,
+           regulon = NA) {
     ligands <- converted_ligands
-
-    # intercell <-
-    #   import_intercell_network(
-    #     receiver_param = list(categories = c('receptor')),
-    #     transmitter_param = list(categories = c('ligand'))
-    #   )
-    # ligands = list(intercell$source_genesymbol)
-
-    # posttranslational <-
-    #   import_post_translational_interactions(organism = '9606',
-    #                                          genesymbol = TRUE)
-    # posttranslational = aggregate(posttranslational$source_genesymbol ~ posttranslational$target_genesymbol,
-    #                               FUN = c)
-    # colnames(posttranslational) <- c('tf', 'receptors')
-    # posttranslational = posttranslational %>%
-    #   remove_rownames %>%
-    #   tibble::column_to_rownames(var =
-    #                                'tf')
 
     R2TF <- aggregate(RTF_DB_mouse$receptor ~ RTF_DB_mouse$tf, FUN = c)
     colnames(R2TF) <- c('tf', 'receptors')
@@ -224,6 +131,8 @@ generate_CrossTalkeR_input_mouse_significant_table <-
       remove_rownames %>%
       tibble::column_to_rownames(var = 'tf')
 
+    regulon <- regulon %>%
+      rename(tf = source)
     sorted_regulon <-
       aggregate(regulon$target ~ regulon$tf, FUN = c)
     colnames(sorted_regulon) <- c('tf', 'targets')
@@ -231,37 +140,13 @@ generate_CrossTalkeR_input_mouse_significant_table <-
       remove_rownames %>%
       tibble::column_to_rownames(var = 'tf')
 
-    output_df <- data.frame(
-      source = character(),
-      target = character(),
-      gene_A = character(),
-      gene_B = character(),
-      type_gene_A = character(),
-      type_gene_B = character(),
-      MeanLR = numeric()
-    )
+    output_df <- create_empty_CTR_dataframe()
 
     for (row in 1:nrow(tf_activities)) {
 
-      r_tf <- data.frame(
-        source = character(),
-        target = character(),
-        gene_A = character(),
-        gene_B = character(),
-        type_gene_A = character(),
-        type_gene_B = character(),
-        MeanLR = double()
-      )
+      r_tf <- create_empty_CTR_dataframe()
 
-      tf_l <- data.frame(
-        source = character(),
-        target = character(),
-        gene_A = character(),
-        gene_B = character(),
-        type_gene_A = character(),
-        type_gene_B = character(),
-        MeanLR = double()
-      )
+      tf_l <- create_empty_CTR_dataframe()
 
       if (tf_activities[row, "z_score"] > 0) {
         tf <- as.character(tf_activities[row,]["gene"])
@@ -284,52 +169,26 @@ generate_CrossTalkeR_input_mouse_significant_table <-
             }
 
             if (expressed == TRUE) {
-              df <-
-                data.frame(
-                  tf_activities[row, "cluster"],
-                  tf_activities[row, "cluster"],
-                  tf_activities[row, "gene"],
-                  ligand,
-                  'Transcription Factor',
-                  'Ligand',
-                  tf_activities[row, "z_score"]
-                )
-              names(df) <-
-                c(
-                  'source',
-                  'target',
-                  'gene_A',
-                  'gene_B',
-                  'type_gene_A',
-                  'type_gene_B',
-                  "MeanLR"
-                )
+              df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
+                                               tf_activities[row, "cluster"],
+                                               tf_activities[row, "gene"],
+                                               ligand,
+                                               'Transcription Factor',
+                                               'Ligand',
+                                               tf_activities[row, "z_score"])
               tf_l <- rbind(tf_l, df)
             }
           }
         }
         if (length(receptors[[1]]) > 0) {
           for (receptor in receptors[[1]]) {
-            df <-
-              data.frame(
-                tf_activities[row, "cluster"],
-                tf_activities[row, "cluster"],
-                receptor,
-                tf_activities[row, "gene"],
-                'Receptor',
-                'Transcription Factor',
-                tf_activities[row, "z_score"]
-              )
-            names(df) <-
-              c(
-                'source',
-                'target',
-                'gene_A',
-                'gene_B',
-                'type_gene_A',
-                'type_gene_B',
-                "MeanLR"
-              )
+            df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
+                                             tf_activities[row, "cluster"],
+                                             receptor,
+                                             tf_activities[row, "gene"],
+                                             'Receptor',
+                                             'Transcription Factor',
+                                             tf_activities[row, "z_score"])
             r_tf <- rbind(r_tf, df)
           }
         }
@@ -347,7 +206,6 @@ generate_CrossTalkeR_input_mouse_significant_table <-
     return(output_df)
   }
 
-
 #' Generate connections in intracellular network
 #'
 #' This function loads the transcription factor activity table/data frame
@@ -364,26 +222,17 @@ generate_CrossTalkeR_input_mouse_significant_table <-
 #' @export
 generate_intracellular_network <-
   function(tf_activities,
-           confidence_level = c("A", "B", "C"),
-           gene_expression, organism = "human") {
+           gene_expression,
+           regulon,
+           organism = "human") {
 
     if (organism == "human") {
-      dorothea_regulon <-
-        get(data("dorothea_hs", package = "dorothea"))
-      regulon <- dorothea_regulon %>%
-        dplyr::filter(confidence %in% confidence_level)
-
       R2TF <- aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
       colnames(R2TF) <- c('tf', 'receptors')
       R2TF <- R2TF %>%
         tibble::remove_rownames() %>%
         tibble::column_to_rownames(var = 'tf')
     } else {
-      dorothea_regulon <-
-        get(data("dorothea_mm", package = "dorothea"))
-      regulon <- dorothea_regulon %>%
-        dplyr::filter(confidence %in% confidence_level)
-
       R2TF <- aggregate(RTF_DB_mouse$receptor ~ RTF_DB_mouse$tf, FUN = c)
       colnames(R2TF) <- c('tf', 'receptors')
       R2TF <- R2TF %>%
@@ -391,6 +240,8 @@ generate_intracellular_network <-
         tibble::column_to_rownames(var = 'tf')
     }
 
+    regulon <- regulon %>%
+      rename(tf = source)
     sorted_regulon <-
       aggregate(regulon$target ~ regulon$tf, FUN = c)
     colnames(sorted_regulon) <- c('tf', 'targets')

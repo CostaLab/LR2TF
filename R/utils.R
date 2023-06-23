@@ -670,10 +670,10 @@ validate_input_arguments <- function(arguments_list) {
   if (is.null(arguments_list$reg)) {
     arguments_list$reg = load_dorothea_regulon(arguments_list$organism)
   } else {
-     if (typeof( arguments_list$reg) == "character") {
+     if (typeof(arguments_list$reg) == "character") {
        arguments_list$reg <-read.csv(arguments_list$reg, header = TRUE)
     }
-    if(!all(c("source", "target", "weight") %in% names(regulon_mouse))){
+    if(!all(c("source", "target", "weight") %in% names(arguments_list$reg))){
       stop("Not all necessary columns found in regulon table! Please make sure that the regulon has the columns source, target and weight!")
     }
   }
