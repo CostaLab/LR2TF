@@ -18,7 +18,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
   dir.create(arguments_list$out_path)
 
   if (is.na(tf_activities)[[1]]) {
-    seuratobject <- decoupleR_viper_analysis(seuratobject,)
+    seuratobject <- decoupleR_viper_analysis(seuratobject,arguments_list$reg)
   } else {
     if (typeof(tf_activities) == "character") {
       tf_activities <- t(read.csv(tf_activities, header = TRUE, row.names = 1))
