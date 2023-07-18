@@ -49,7 +49,7 @@ generate_CrossTalkeR_input_significant_table <-
       r_tf <- create_empty_CTR_dataframe()
       tf_l <- create_empty_CTR_dataframe()
 
-      if (tf_activities[row, "z_score"] > 0) {
+      #if (tf_activities[row, "z_score"] > 0) {
         tf <- as.character(tf_activities[row, "gene"])
         targets <- sorted_regulon[tf,][1]
         receptors <- R2TF[tf,][1]
@@ -88,7 +88,7 @@ generate_CrossTalkeR_input_significant_table <-
             r_tf <- rbind(r_tf, df)
           }
         }
-      }
+      #}
 
       r_tf$gene_A <- gsub("_", "+", r_tf$gene_A, fixed = TRUE)
       r_tf$gene_B <- gsub("_", "+", r_tf$gene_B, fixed = TRUE)
@@ -148,7 +148,7 @@ generate_CrossTalkeR_input_mouse_significant_table <-
 
       tf_l <- create_empty_CTR_dataframe()
 
-      if (tf_activities[row, "z_score"] > 0) {
+      #if (tf_activities[row, "z_score"] > 0) {
         tf <- as.character(tf_activities[row,]["gene"])
         targets <- sorted_regulon[tf,][1]
         receptors <- R2TF[tf,][1]
@@ -192,7 +192,7 @@ generate_CrossTalkeR_input_mouse_significant_table <-
             r_tf <- rbind(r_tf, df)
           }
         }
-      }
+      #}
 
       r_tf$gene_A <- gsub("_", "+", r_tf$gene_A, fixed = TRUE)
       r_tf$gene_B <- gsub("_", "+", r_tf$gene_B, fixed = TRUE)
@@ -265,7 +265,7 @@ generate_intracellular_network <-
 
 
     for (row in 1:nrow(tf_activities)) {
-      if (tf_activities[row, "z_score"] > 0) {
+      #if (tf_activities[row, "z_score"] > 0) {
         tf <- as.character(tf_activities[row, "gene"])
         targets <- sorted_regulon[tf,][[1]]
         receptors <- R2TF[tf,][1]
@@ -312,7 +312,7 @@ generate_intracellular_network <-
             }
           }
         }
-      }
+      #}
     }
     recept_regulon <- merge(x = RTF_df, y = TFTG_df,
                             by = "TF", all = TRUE)
