@@ -7,9 +7,11 @@
 run_py_decoupler(object_path, regulon_path, out_path)
 }
 \arguments{
-\item{out_path}{Output path to save results}
+\item{object_path}{path to anndata object}
 
-\item{seuratobject}{Input Seurat Object}
+\item{regulon_path}{path to regulon table}
+
+\item{out_path}{Output path to save results}
 }
 \description{
 To run decoupleR python version scanpy, pandas, and decoupleR python libraries need to be installed.

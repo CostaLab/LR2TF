@@ -626,7 +626,8 @@ load_dorothea_regulon <- function(organism) {
 #'
 #' To run decoupleR python version scanpy, pandas, and decoupleR python libraries need to be installed.
 #'
-#' @param seuratobject Input Seurat Object
+#' @param object_path path to anndata object
+#' @param regulon_path path to regulon table
 #' @param out_path Output path to save results
 #' @import sceasy
 #' @export
