@@ -202,7 +202,7 @@ get_significant_tfs_single <- function(seuratobject, condition, out_path, pval, 
     return(txt)
   })
 
-  tag_mapping = seuratobject.markers[c("gene", "tag", "log_fc_tag", "cluster")]
+  tag_mapping = seuratobject.markers[c("gene", "tag", "log_fc_tag", "cluster", "p_val_adj", "avg_log2FC")]
   tag_mapping = filter(tag_mapping, p_val_adj < as.double(pval))
   tag_mapping = filter(tag_mapping, avg_log2FC > as.double(log2fc) | avg_log2FC < (0 - as.double(log2fc)))
   #tag_mapping = tag_mapping[(tag_mapping$tag == "***"),]

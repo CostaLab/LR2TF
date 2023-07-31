@@ -622,20 +622,70 @@ load_dorothea_regulon <- function(organism) {
   return(regulon)
 }
 
-#' Run decoupleR python script.
+#' Run viper with decoupleR python script.
 #'
 #' To run decoupleR python version scanpy, pandas, and decoupleR python libraries need to be installed.
 #'
 #' @param object_path path to anndata object
 #' @param regulon_path path to regulon table
 #' @param out_path Output path to save results
-#' @import sceasy
 #' @export
-run_py_decoupler <- function(object_path, regulon_path, out_path) {
+run_py_decoupler_viper <- function(object_path, regulon_path, out_path) {
   reticulate::source_python(system.file("python_scripts/run_decoupleR.py", package = "LR2TF"))
-  run_decoupler(object_path, regulon_path, out_path)
+  run_decoupler_viper(object_path, regulon_path, out_path)
 }
 
+#' Run weighted mean with decoupleR python script.
+#'
+#' To run decoupleR python version scanpy, pandas, and decoupleR python libraries need to be installed.
+#'
+#' @param object_path path to anndata object
+#' @param regulon_path path to regulon table
+#' @param out_path Output path to save results
+#' @export
+run_py_decoupler_wmean <- function(object_path, regulon_path, out_path) {
+  reticulate::source_python(system.file("python_scripts/run_decoupleR.py", package = "LR2TF"))
+  run_decoupler_wmean(object_path, regulon_path, out_path)
+}
+
+#' Run ulm with decoupleR python script.
+#'
+#' To run decoupleR python version scanpy, pandas, and decoupleR python libraries need to be installed.
+#'
+#' @param object_path path to anndata object
+#' @param regulon_path path to regulon table
+#' @param out_path Output path to save results
+#' @export
+run_py_decoupler_ulm <- function(object_path, regulon_path, out_path) {
+  reticulate::source_python(system.file("python_scripts/run_decoupleR.py", package = "LR2TF"))
+  run_decoupler_ulm(object_path, regulon_path, out_path)
+}
+
+#' Run mlm with decoupleR python script.
+#'
+#' To run decoupleR python version scanpy, pandas, and decoupleR python libraries need to be installed.
+#'
+#' @param object_path path to anndata object
+#' @param regulon_path path to regulon table
+#' @param out_path Output path to save results
+#' @export
+run_py_decoupler_mlm <- function(object_path, regulon_path, out_path) {
+  reticulate::source_python(system.file("python_scripts/run_decoupleR.py", package = "LR2TF"))
+  run_decoupler_mlm(object_path, regulon_path, out_path)
+}
+
+#' Run mlm with decoupleR python script.
+#'
+#' To run decoupleR python version scanpy, pandas, and decoupleR python libraries need to be installed.
+#'
+#' @param object_path path to anndata object
+#' @param condition_field name of meta-data field with condition information
+#' @param cluster_field name of meta-data field with cluster information
+#' @export
+run_py_liana <- function(object_path, regulon_path, out_path) {
+  reticulate::source_python(system.file("python_scripts/run_liana.py", package = "LR2TF"))
+  run_liana(object_path, condition_field, cluster_field)
+}
 
 #' Loading old dorothea package regulons (default if no regulon is provided)
 #'
