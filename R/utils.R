@@ -175,7 +175,7 @@ save_unfiltered_tf_scores <- function(viper_scores_df, CellsClusters, condition,
     spread(tf, avg) %>%
     data.frame(row.names = 1, check.names = FALSE)
   tf_scores <- t(summarized_viper_scores_df)
-  write.csv(tf_scores, file = paste0(out_path, 'unfiltered_tf_scores', '_', condition, '.csv'))
+  write.csv(tf_scores, file = paste0(out_path, '/unfiltered_tf_scores', '_', condition, '.csv'))
 }
 
 
@@ -206,7 +206,7 @@ save_variable_tf_scores <- function(tf_scores, condition, out_path) {
     spread(tf, avg) %>%
     data.frame(row.names = 1, check.names = FALSE)
   tf_scores <- t(summarized_viper_scores_df_all)
-  write.csv(tf_scores, file = paste0(out_path, 'variable_tf_scores', '_', condition, '.csv'))
+  write.csv(tf_scores, file = paste0(out_path, '/variable_tf_scores', '_', condition, '.csv'))
 
   return(tf_scores)
 }
@@ -249,7 +249,7 @@ plot_tf_activity <-
     rownames(tf_scores) <- gsub(".", "-", rownames(tf_scores), fixed = TRUE)
 
     pdf(
-      file = paste0(out_path, 'tf_activity_', condition, '.pdf'),
+      file = paste0(out_path, '/tf_activity_', condition, '.pdf'),
       height = plot_height,
       width = plot_width
     )

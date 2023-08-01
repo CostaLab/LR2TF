@@ -136,7 +136,7 @@ plot_highly_variable_tfs <-
 
     pdf(
       file = paste0(out_path,
-                    'tf_activity_top20_variable_', condition, '.pdf'),
+                    '/tf_activity_top20_variable_', condition, '.pdf'),
       width = plot_width,
       height = plot_height
     )
@@ -183,7 +183,7 @@ plot_tf_activity_compressed <-
 
     tf_scores = as.matrix(tf_scores)
     pdf(
-      file = paste0(out_path, 'tf_activity_compressed_', condition, '.pdf'),
+      file = paste0(out_path, '/tf_activity_compressed_', condition, '.pdf'),
       height = plot_height,
       width = plot_width
     )

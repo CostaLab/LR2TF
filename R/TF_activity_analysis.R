@@ -56,7 +56,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
       #          name, '.csv'))
 
-      tf_activity_scores = get_significant_tfs_single(sub_object, name, arguments_list$out_path, pval = arguments_list$pval, log2fc = arguments_list$logfc)
+      tf_activity_scores = get_significant_tfs_single(sub_object, name, tf_path, pval = arguments_list$pval, log2fc = arguments_list$logfc)
       result_list[[name]] = tf_activity_scores
       gene_expression_list[[paste0(name, "_average_expression")]] = sub_object.averages[["RNA"]]
 
@@ -84,13 +84,13 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
               intracellular_network_condition = list(),
               intracellular_network_cluster = intranet_cluster_list)
 
-    saveRDS(tf, file = paste0(arguments_list$out_path, "result_list.RDS"))
-    saveRDS(seuratobject, file = paste0(arguments_list$out_path, "result_seurat_object.RDS"))
+    saveRDS(tf, file = paste0(tf_path, "result_TF_object.RDS"))
+    saveRDS(seuratobject, file = paste0(tf_path, "TF_seurat_object.RDS"))
     return(tf)
   }
 
   else {
-    out_path_compared <- paste0(arguments_list$out_path, "compared")
+    out_path_compared <- paste0(tf_path, "compared")
     dir.create(out_path_compared)
     compared_significant_tfs <- condition_comparison_significant(seuratobject, out_path_compared, arguments_list$celltype, arguments_list$condition, arguments_list$comparison_list)
 
@@ -139,7 +139,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
 
       tf_activity_scores = get_significant_tfs(sub_object,
                                                name,
-                                               arguments_list$out_path,
+                                               tf_path,
                                                compared_tfs,
                                                pval = arguments_list$pval,
                                                log2fc = arguments_list$logfc)
@@ -182,8 +182,8 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
               intracellular_network_condition = intranet_condition_list,
               intracellular_network_cluster = intranet_cluster_list)
 
-    saveRDS(tf, file = paste0(arguments_list$out_path, "result_list.RDS"))
-    saveRDS(seuratobject, file = paste0(arguments_list$out_path, "result_seurat_object.RDS"))
+    saveRDS(tf, file = paste0(tf_path, "result_TF_object.RDS"))
+    saveRDS(seuratobject, file = paste0(tf_path, "TF_seurat_object.RDS"))
 
     return(tf)
   }
