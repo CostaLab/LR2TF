@@ -61,11 +61,11 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       gene_expression_list[[paste0(name, "_average_expression")]] = sub_object.averages[["RNA"]]
 
       if (arguments_list$organism == "human") {
-        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_significant_table(tf_activity_scores[["cluster"]],
+        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input(tf_activity_scores[["cluster"]],
                                                                                  gene_expression_list[[paste0(name, "_average_expression")]],
                                                                                  arguments_list$reg)
       }else {
-        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_mouse_significant_table(tf_activity_scores[["cluster"]],
+        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_mouse(tf_activity_scores[["cluster"]],
                                                                                        gene_expression_list[[paste0(name, "_average_expression")]],
                                                                                        arguments_list$reg)
       }
@@ -148,17 +148,17 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       gene_expression_list[[paste0(name, "_average_expression")]] = sub_object.averages[["RNA"]]
 
       if (arguments_list$organism == "human") {
-        CTR_condition_list[[name]] <- generate_CrossTalkeR_input_significant_table(tf_activity_scores[["condition"]],
+        CTR_condition_list[[name]] <- generate_CrossTalkeR_input(tf_activity_scores[["condition"]],
                                                                                    gene_expression_list[[paste0(name, "_average_expression")]],
                                                                                    arguments_list$reg)
-        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_significant_table(tf_activity_scores[["cluster"]],
+        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input(tf_activity_scores[["cluster"]],
                                                                                  gene_expression_list[[paste0(name, "_average_expression")]],
                                                                                  arguments_list$reg)
       }else {
-        CTR_condition_list[[name]] <- generate_CrossTalkeR_input_mouse_significant_table(tf_activity_scores[["condition"]],
+        CTR_condition_list[[name]] <- generate_CrossTalkeR_input_mouse(tf_activity_scores[["condition"]],
                                                                                          gene_expression_list[[paste0(name, "_average_expression")]],
                                                                                          arguments_list$reg)
-        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_mouse_significant_table(tf_activity_scores[["cluster"]],
+        CTR_cluster_list[[name]] <- generate_CrossTalkeR_input_mouse(tf_activity_scores[["cluster"]],
                                                                                        gene_expression_list[[paste0(name, "_average_expression")]],
                                                                                        arguments_list$reg)
       }
