@@ -14,7 +14,7 @@
 #' @import dorothea
 #' @import dplyr
 #' @export
-generate_CrossTalkeR_input_significant_table <-
+generate_CrossTalkeR_input <-
   function(tf_activities,
            gene_expression,
            regulon = NA) {
@@ -22,12 +22,7 @@ generate_CrossTalkeR_input_significant_table <-
     regulon <- regulon %>%
       rename(tf = source)
 
-    intercell <-
-      import_intercell_network(
-        receiver_param = list(categories = c('receptor')),
-        transmitter_param = list(categories = c('ligand'))
-      )
-    ligands <- list(intercell$source_genesymbol)
+    ligands <- ligands_human
 
     R2TF <- aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
     colnames(R2TF) <- c('tf', 'receptors')
@@ -119,7 +114,7 @@ generate_CrossTalkeR_input_significant_table <-
 #' @import OmnipathR
 #' @import dorothea
 #' @export
-generate_CrossTalkeR_input_mouse_significant_table <-
+generate_CrossTalkeR_input_mouse <-
   function(tf_activities,
            gene_expression,
            regulon = NA) {
