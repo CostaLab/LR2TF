@@ -11,6 +11,11 @@
 #' }
 "mouse_regulon_homologous"
 
+#' List of annotated ligands from OmnipathR for human data
+#'
+#' @format A list with 9708 elements
+"ligands_human"
+
 #' Mouse-Human homologous genes table ligands
 #'
 #' A data frame containing the mouse-human homologous genes of the ligands in the Omnipath database
