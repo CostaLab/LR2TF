@@ -45,44 +45,44 @@ generate_CrossTalkeR_input <-
       tf_l <- create_empty_CTR_dataframe()
 
       #if (tf_activities[row, "z_score"] > 0) {
-        tf <- as.character(tf_activities[row, "gene"])
-        targets <- sorted_regulon[tf,][1]
-        receptors <- R2TF[tf,][1]
-        tf_ligands <- intersect(targets[[1]], ligands[[1]])
-        if (length(tf_ligands) > 0) {
-          for (ligand in tf_ligands) {
-            expressed <- FALSE
-            if (ligand %in% rownames(gene_expression)) {
-              ex_value <- gene_expression[ligand, tf_activities[row, "cluster"]]
-              if (ex_value != 0) {
-                expressed <- TRUE
-              }
-            }
-
-            if (expressed == TRUE) {
-              df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
-                                               tf_activities[row, "cluster"],
-                                               tf_activities[row, "gene"],
-                                               ligand,
-                                               'Transcription Factor',
-                                               'Ligand',
-                                               tf_activities[row, "z_score"])
-              tf_l <- rbind(tf_l, df)
+      tf <- as.character(tf_activities[row, "gene"])
+      targets <- sorted_regulon[tf,][1]
+      receptors <- R2TF[tf,][1]
+      tf_ligands <- intersect(targets[[1]], ligands[[1]])
+      if (length(tf_ligands) > 0) {
+        for (ligand in tf_ligands) {
+          expressed <- FALSE
+          if (ligand %in% rownames(gene_expression)) {
+            ex_value <- gene_expression[ligand, tf_activities[row, "cluster"]]
+            if (ex_value != 0) {
+              expressed <- TRUE
             }
           }
-        }
-        if (length(receptors[[1]]) > 0) {
-          for (receptor in receptors[[1]]) {
+
+          if (expressed == TRUE) {
             df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
                                              tf_activities[row, "cluster"],
-                                             receptor,
                                              tf_activities[row, "gene"],
-                                             'Receptor',
+                                             ligand,
                                              'Transcription Factor',
+                                             'Ligand',
                                              tf_activities[row, "z_score"])
-            r_tf <- rbind(r_tf, df)
+            tf_l <- rbind(tf_l, df)
           }
         }
+      }
+      if (length(receptors[[1]]) > 0) {
+        for (receptor in receptors[[1]]) {
+          df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
+                                           tf_activities[row, "cluster"],
+                                           receptor,
+                                           tf_activities[row, "gene"],
+                                           'Receptor',
+                                           'Transcription Factor',
+                                           tf_activities[row, "z_score"])
+          r_tf <- rbind(r_tf, df)
+        }
+      }
       #}
 
       r_tf$gene_A <- gsub("_", "+", r_tf$gene_A, fixed = TRUE)
@@ -144,49 +144,49 @@ generate_CrossTalkeR_input_mouse <-
       tf_l <- create_empty_CTR_dataframe()
 
       #if (tf_activities[row, "z_score"] > 0) {
-        tf <- as.character(tf_activities[row,]["gene"])
-        targets <- sorted_regulon[tf,][1]
-        receptors <- R2TF[tf,][1]
-        tf_ligands <- intersect(targets[[1]], ligands)
-        if (length(tf_ligands) > 0) {
-          for (ligand in tf_ligands) {
-            expressed <- FALSE
-            translations <- ligand
-            if (length(translations) > 0) {
-              for (l in translations) {
-                if (l %in% rownames(gene_expression)) {
-                  ex_value <- gene_expression[l, tf_activities[row, "cluster"]]
-                  if (ex_value != 0) {
-                    expressed <- TRUE
-                  }
+      tf <- as.character(tf_activities[row,]["gene"])
+      targets <- sorted_regulon[tf,][1]
+      receptors <- R2TF[tf,][1]
+      tf_ligands <- intersect(targets[[1]], ligands)
+      if (length(tf_ligands) > 0) {
+        for (ligand in tf_ligands) {
+          expressed <- FALSE
+          translations <- ligand
+          if (length(translations) > 0) {
+            for (l in translations) {
+              if (l %in% rownames(gene_expression)) {
+                ex_value <- gene_expression[l, tf_activities[row, "cluster"]]
+                if (ex_value != 0) {
+                  expressed <- TRUE
                 }
               }
             }
-
-            if (expressed == TRUE) {
-              df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
-                                               tf_activities[row, "cluster"],
-                                               tf_activities[row, "gene"],
-                                               ligand,
-                                               'Transcription Factor',
-                                               'Ligand',
-                                               tf_activities[row, "z_score"])
-              tf_l <- rbind(tf_l, df)
-            }
           }
-        }
-        if (length(receptors[[1]]) > 0) {
-          for (receptor in receptors[[1]]) {
+
+          if (expressed == TRUE) {
             df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
                                              tf_activities[row, "cluster"],
-                                             receptor,
                                              tf_activities[row, "gene"],
-                                             'Receptor',
+                                             ligand,
                                              'Transcription Factor',
+                                             'Ligand',
                                              tf_activities[row, "z_score"])
-            r_tf <- rbind(r_tf, df)
+            tf_l <- rbind(tf_l, df)
           }
         }
+      }
+      if (length(receptors[[1]]) > 0) {
+        for (receptor in receptors[[1]]) {
+          df <- add_entry_to_CTR_dataframe(tf_activities[row, "cluster"],
+                                           tf_activities[row, "cluster"],
+                                           receptor,
+                                           tf_activities[row, "gene"],
+                                           'Receptor',
+                                           'Transcription Factor',
+                                           tf_activities[row, "z_score"])
+          r_tf <- rbind(r_tf, df)
+        }
+      }
       #}
 
       r_tf$gene_A <- gsub("_", "+", r_tf$gene_A, fixed = TRUE)
@@ -221,45 +221,46 @@ generate_intracellular_network <-
            regulon,
            organism = "human") {
 
-    if (organism == "human") {
-      R2TF <- aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
-      colnames(R2TF) <- c('tf', 'receptors')
-      R2TF <- R2TF %>%
+    if (dim(tf_activities)[1] > 0) {
+      if (organism == "human") {
+        R2TF <- aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
+        colnames(R2TF) <- c('tf', 'receptors')
+        R2TF <- R2TF %>%
+          tibble::remove_rownames() %>%
+          tibble::column_to_rownames(var = 'tf')
+      } else {
+        R2TF <- aggregate(RTF_DB_mouse$receptor ~ RTF_DB_mouse$tf, FUN = c)
+        colnames(R2TF) <- c('tf', 'receptors')
+        R2TF <- R2TF %>%
+          tibble::remove_rownames() %>%
+          tibble::column_to_rownames(var = 'tf')
+      }
+
+      regulon <- regulon %>%
+        rename(tf = source)
+      sorted_regulon <-
+        aggregate(regulon$target ~ regulon$tf, FUN = c)
+      colnames(sorted_regulon) <- c('tf', 'targets')
+      sorted_regulon <- sorted_regulon %>%
         tibble::remove_rownames() %>%
         tibble::column_to_rownames(var = 'tf')
-    } else {
-      R2TF <- aggregate(RTF_DB_mouse$receptor ~ RTF_DB_mouse$tf, FUN = c)
-      colnames(R2TF) <- c('tf', 'receptors')
-      R2TF <- R2TF %>%
-        tibble::remove_rownames() %>%
-        tibble::column_to_rownames(var = 'tf')
-    }
 
-    regulon <- regulon %>%
-      rename(tf = source)
-    sorted_regulon <-
-      aggregate(regulon$target ~ regulon$tf, FUN = c)
-    colnames(sorted_regulon) <- c('tf', 'targets')
-    sorted_regulon <- sorted_regulon %>%
-      tibble::remove_rownames() %>%
-      tibble::column_to_rownames(var = 'tf')
+      #recept_regulon <- create_empty_Regulon_dataframe()
 
-    #recept_regulon <- create_empty_Regulon_dataframe()
+      RTF_df <- data.frame(
+        Receptor = character(),
+        TF = character()
+      )
 
-    RTF_df <- data.frame(
-      Receptor = character(),
-      TF = character()
-    )
+      TFTG_df <- data.frame(
+        celltype = character(),
+        TF = character(),
+        Target_Gene = character(),
+        TF_Score = numeric()
+      )
 
-    TFTG_df <- data.frame(
-      celltype = character(),
-      TF = character(),
-      Target_Gene = character(),
-      TF_Score = numeric()
-    )
-
-    for (row in 1:nrow(tf_activities)) {
-      #if (tf_activities[row, "z_score"] > 0) {
+      for (row in 1:nrow(tf_activities)) {
+        #if (tf_activities[row, "z_score"] > 0) {
         tf <- as.character(tf_activities[row, "gene"])
         targets <- sorted_regulon[tf,][[1]]
         receptors <- R2TF[tf,][1]
@@ -306,11 +307,12 @@ generate_intracellular_network <-
             }
           }
         }
-      #}
+        #}
+      }
+      recept_regulon <- merge(x = RTF_df, y = TFTG_df,
+                              by = "TF", all = TRUE)
+      return(recept_regulon)
     }
-    recept_regulon <- merge(x = RTF_df, y = TFTG_df,
-                            by = "TF", all = TRUE)
-    return(recept_regulon)
   }
 
 
