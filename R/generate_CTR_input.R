@@ -258,11 +258,10 @@ generate_intracellular_network <-
       TF_Score = numeric()
     )
 
-
     for (row in 1:nrow(tf_activities)) {
       #if (tf_activities[row, "z_score"] > 0) {
         tf <- as.character(tf_activities[row, "gene"])
-        targets <- sorted_regulon[tf,][1]
+        targets <- sorted_regulon[tf,][[1]]
         receptors <- R2TF[tf,][1]
         if (length(targets) > 0) {
           if (length(receptors[[1]]) > 0) {
