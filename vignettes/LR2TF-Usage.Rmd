@@ -1,10 +1,6 @@
 ---
 title: "LR2TF-Usage"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{LR2TF-Usage}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: html_document
 ---
 
 ```{r, include = FALSE}
@@ -38,106 +34,94 @@ For the transcription factor activity predictions we recommend using the decoupl
 ```{r, include = TRUE, eval = FALSE}
 library(LR2TF)
 library(Seurat)
+
+#load own dataset:
 seurat_object <- readRDS("/path/to/seurat_object.Rds")
+
+#test dataset from package:
+data(bone_marrow_stromal_cell_example, package = "LR2TF")
+seurat_object <- bone_marrow_stromal_cell_example
+
 LR2TF::convert_seurat_to_anndata(seurat_object, "/path/to/save/AnnData/object/")
 ```
 
 The file "anndata_object.h5ad" will be saved into the user defined path and can then be used to perform the predictions. Beside the scRNA-seq data file, we also need to define a regulon database in form of a csv file with the coloumns "source", "target" and "weight". Within this package we provide the dorothea databases for human and mouse, downloaded from the decoupleR package. These files also contain the column "confidence" (levels A to D) with information on how well described a transcription factor and target gene interaction is in different resources. We recommend using the confidence levels A and B.
 
 ```{r, include = TRUE, eval = FALSE}
-library(dplyr)
 
-regulon <- read.csv(system.file("regulons", "human_dorothea_reg.csv", package = "LR2TF"))
+regulon <- read.csv(system.file("regulons", "human_dorothea_reg.csv", package = "LR2TF"), row.names = 1)
+filtered_regulon <- regulon[regulon$confidence %in% c("A","B"),]
+write.csv("/path/to/save/filterd_regulon.csv")
 
 ```
 
-## Usage
-First the package and Seurat need to be imported:
-&nbsp;
+Now it is possible to run the transcription factor activity prediction with decoupleR:
+```{python, include = TRUE, eval = FALSE}
+
+import scanpy as sc
+import decoupler as dc
+import pandas as pd
+
+ann_data = sc.read_h5ad("/path/to/AnnData/object/anndata_object.h5ad")
+reg = pd.read_csv("/path/to/filterd_regulon.csv")
+
+dc.run_viper(mat=ann_data, net=reg, source='source', target='target', weight='weight', verbose=True, use_raw=False)
+
+estimates = ann_data.obsm['viper_estimate']
+estimates.to_csv("/path/to/save/decoupler_results.csv")
+
+```
+
+## Using the LR2TF package
+Now, that we have a transcription factor activity matrix, we can continue the analysis with the LR2TF package. In this case we will use our test data for this example. First of all, it is necessary to define the following parameters in form of a list:
 
 ```{r eval = FALSE}
-library(LR2TF)
-library(Seurat)
+parameters <- list("out_path" = "/path/to/save/results",
+                   reg = "/path/to/filterd_regulon.csv",
+                   "organism" = "human",
+                   "celltype" = "new_annotation", #name of the meta data field defining cell identities
+                   "condition" = "protocol", #name of the meta data field defining conditions
+                   "comparison_list" = list(c("PMF,MF2", "control")), #list of condition comparison to consider
+                   "logfc" = 0.5,
+                   "pval" = 0.05) #thresholds for logfc and pval used in differential transcription factor analysis
 ```
-&nbsp;
 
-In the package an example dataset it included that can be accessed:
-&nbsp;
+After defining the necessary parameter the transcription factor activity can be performed by calling:
 
 ```{r, include = TRUE, eval = FALSE}
-data(bone_marrow_stromal_cell_example, package = "LR2TF")
+results <- LR2TF::tf_activity_analysis(seuratobject = seurat_object,
+                                       tf_activities = "/path/to/decoupler_results.csv",
+                                       arguments_list = parameters)
 ```
-&nbsp;
 
-Before the execution, some parameters need to be defined:
-&nbsp;
+The "results" object contains the results of the performed analyses, consisting of multiple tables inside the object:
 
-1. Path to save the results to
-2. defining the confidence level of the dorothea regulon (A (strong) to E (low))
-3. the organism of the sample was extracted from
-4. Name of the meta-data field in the Seurat object of the cell annotation
-5. Name of the meta-data field in the Seurat object of the condition annotation
-6. List of condition comparison to be calculated
+1. tf_activities_condition -> tables with condition significant transcription factors for each compared condition
+2. tf_activities_cluster -> tables with cluster specific transcription factors for all conditions in the data
+3. average_gene_expression -> matrices for each condition with average gene expressions
+4. regulon -> regulon used for the analysis as specified by the user
+5. CTR_input_condition -> for each condition a table with receptor-transcription factor and transcription factor-ligand interactions based on condition specific transcription factors (input for CrossTalker)
+6. CTR_input_cluster -> for each condition a table with receptor-transcription factor and transcription factor-ligand interactions based on cluster specific transcription factors (input for CrossTalker)
+7. intracellular_network_condition -> for each condition a table with receptor-transcription factor and transcription factor-target gene interactions based on condition specific transcription factors
+8. intracellular_network_cluster -> for each condition a table with receptor-transcription factor and transcription factor-target gene interactions based on cluster specific transcription factors
 
-&nbsp;
+(Note that special characters might be exchanged by underscores, if they cause problems with the naming of the tables; eg PMF,MF2 -> PMF_MF2)
 
+The last step is to combine previous results from ligand receptor interaction analyses (e.g. CellPhoneDB) with the transcription factor results. (In the case of the test data the ligand-receptor interactions are provided within the CrossTalkeR package.)
 ```{r, include = TRUE, eval = FALSE}
-out_path = '/Path/to/result/directory'
-confidence_level = c("A", "B", "C", "D", "E")
-organism = "human"
-celltype_annotation = "annotation"
-condition_annotation = "protocol"
-comparison_list = list(c("control", "PMF,MF2"))
-```
-&nbsp;
+table_ctr <- read.csv("/path/to/control_lr_results.csv", row.names = 1)
+table_exp <- read.csv("/path/to/PMF,MF2_lr_results.csv", row.names = 1)
 
-After defining the necessary parameter the transcription factor activity can be predicted by calling:
-&nbsp;
+ctr_inptu <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["control"]], table_ctr, parameters$out_path, "control")
+exp_input <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["PMF_MF2"]], table_exp, parameters$out_path, "PMF_MF2")
 
-```{r, include = TRUE, eval = FALSE}
-results = LR2TF::dorothea_tf_prediction(bone_marrow_stromal_cell_example, out_path, confidence_level, organism, condition_annotation, celltype_annotation, comparison_list)
-```
-&nbsp;
+ctr_file <- "/path/to/control_lr_results.csv"
+exp_file <- "/path/to/PMF,MF2_lr_results.csv"
 
-As result an object containing three fields is obtained (here example for control condition):
-&nbsp;
-
-* results[["control"]][["cluster"]] -> cluster specific transcription factors
-* results[["control"]][["condition"]] -> condition specific transcription factors
-* results[["control_average_expression"]] -> average gene expression matrix of specified condition
-
-&nbsp;
-
-For the conversion into the CrossTalkeR input format and the connection to receptor and ligands, either the cluster or the condition specific transcription factors can be used.
-&nbsp;
-
-```{r, include = TRUE, eval = FALSE}
-result_table_control <- LR2TF::generate_CrossTalkeR_input_significant_table(results[["control"]][["condition"]], confidence_level, results[["control_average_expression"]])
-result_table_pmf <- LR2TF::generate_CrossTalkeR_input_significant_table(results[["PMF_MF2"]][["condition"]], confidence_level, results[["PMF_MF2_average_expression"]])
-```
-&nbsp;
-
-The last step is to combine previous results from ligand receptor interaction analyses (e.g. CellPhoneDB) with the transcription factor results:
-&nbsp;
-
-```{r, include = TRUE, eval = FALSE}
-control_lr_file = "/Path/to/CellphoneDB/output/ControlLR.csv"
-pmf_lr_file = "/Path/to/CellphoneDB/output/PMFLR.csv"
-
-LR2TF::combine_LR_and_TF(result_table_control, control_lr_file, out_path, "control")
-LR2TF::combine_LR_and_TF(result_table_pmf, pmf_lr_file, out_path, "PMF_MF2")
+ctr_inptu <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["control"]], ctr_file, parameters$out_path, "control")
+exp_input <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["PMF_MF2"]], exp_file, parameters$out_path, "PMF_MF2")
 
 ```
-&nbsp;
-
-## Analysis of mouse data
-It is also possible to analyse scRNA-seq data from mouse samples. For this, the organism parameter must be set to "mouse" and the following function must be used when generating the CrossTalkeR input:
-&nbsp;
-
-```{r, include = TRUE, eval = FALSE}
-LR2TF::generate_CrossTalkeR_input_mouse_significant_table()
-```
-&nbsp;
 
 ## References
 
@@ -155,47 +139,8 @@ LR2TF::generate_CrossTalkeR_input_mouse_significant_table()
 
 
 
-#library(LR2TF)
-library(Matrix)
-library(Seurat)
-#library(CrossTalkeR)
-library(tibble)
-library(dplyr)
-library(org.Mm.eg.db)
-library(org.Hs.eg.db)
-library(clusterProfiler)
-library(liana)
-library(decoupleR)
-library(reticulate)
-devtools::load_all("/home/vanessa/repositories/CrossTalkeR/")
-devtools::load_all("/home/vanessa/repositories/LR2TF/")
-reticulate::use_condaenv("py39")
-data(bone_marrow_stromal_cell_example, package = "LR2TF")
-table_ctr <- read.csv("/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/viper_olddorothea/LR/control_lr_ready.csv", row.names = 1)
-table_exp <- read.csv("/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/viper_olddorothea/LR/PMF,MF2_lr_ready.csv", row.names = 1)
-
-parameters <- list("out_path" = "/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/ulm_decouplerdorothea/",
-                   reg = "/decoupler_comparison/wmean_decouplerdorothea/decoupler_doro_human.csv",
-                   "organism" = "human",
-                   "celltype" = "new_annotation",
-                   "condition" = "protocol",
-                   "comparison_list" = list(c("PMF,MF2", "control")),
-                   "logfc" = 1,
-                   "pval" = 0.05)
 
 
-out_path <-  "/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/ulm_decouplerdorothea/"
-object_path <- "/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/viper_olddorothea/bone_marrow_stromal_example_data.h5ad"
-reg_path <- "/decoupler_comparison/wmean_decouplerdorothea/decoupler_doro_human.csv"
-
-LR2TF::run_py_decoupler_ulm(object_path, reg_path, out_path)
-
-results <- LR2TF::tf_activity_analysis(seuratobject = bone_marrow_stromal_cell_example,
-                                       tf_activities = "/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/ulm_decouplerdorothea/decoupler_results.csv",
-                                       arguments_list = parameters)
-
-ctr_inptu <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["control"]], table_ctr, parameters$out_path, "control")
-exp_input <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["PMF_MF2"]], table_exp, parameters$out_path, "PMF_MF2")
 
 
 
