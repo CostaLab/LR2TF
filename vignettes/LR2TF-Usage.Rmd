@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This is a guide for the usage of the LR2TF package. It is used to analyze scRNA data for transcription factor activities. The transcription factor activities are estimated using the DoRothEA[1] tool. Using the DoRothEA regulon and post-translational interactions from the Omnipath database[2,3,4], connections are made between transcription factors and ligands and receptors.
+This is a guide for the usage of the LR2TF package. It is used to analyze scRNA-seq data for transcription factor activities. The transcription factor activities are estimated using the decoupleR tool. Using the DoRothEA regulon version from decoupleR and post-translational interactions from the Omnipath database[2,3,4], connections are made between transcription factors and ligands and receptors.
 
 The results can be combined with ligand-receptor interactions and then analyzed using CrossTalkeR (https://github.com/CostaLab/CrossTalkeR/) [5].
 
@@ -30,6 +30,26 @@ library(remotes)
 install_github("CostaLab/LR2TF", build_vignettes = TRUE)
 ```
 &nbsp;
+
+## Transcription factor activity predictions using decoupleR in python
+
+For the transcription factor activity predictions we recommend using the decoupleR package in its python version. This provides a better performance, especially for larger data sets. To perform the predictions with decoupleR, we need an AnnData (.h5ad) file. If the scRNA-seq data is saved as a Seurat object (.Rds file), it can be converted to AnnData format using the sceasy package and the function we provide:
+
+```{r, include = TRUE, eval = FALSE}
+library(LR2TF)
+library(Seurat)
+seurat_object <- readRDS("/path/to/seurat_object.Rds")
+LR2TF::convert_seurat_to_anndata(seurat_object, "/path/to/save/AnnData/object/")
+```
+
+The file "anndata_object.h5ad" will be saved into the user defined path and can then be used to perform the predictions. Beside the scRNA-seq data file, we also need to define a regulon database in form of a csv file with the coloumns "source", "target" and "weight". Within this package we provide the dorothea databases for human and mouse, downloaded from the decoupleR package. These files also contain the column "confidence" (levels A to D) with information on how well described a transcription factor and target gene interaction is in different resources. We recommend using the confidence levels A and B.
+
+```{r, include = TRUE, eval = FALSE}
+library(dplyr)
+
+regulon <- read.csv(system.file("regulons", "human_dorothea_reg.csv", package = "LR2TF"))
+
+```
 
 ## Usage
 First the package and Seurat need to be imported:
@@ -130,3 +150,52 @@ LR2TF::generate_CrossTalkeR_input_mouse_significant_table()
 [4] D Turei, A Valdeolivas, L Gul, N Palacio-Escat, M Klein, O Ivanova, M Olbei, A Gabor, F Theis, D Modos, T Korcsmaros and J Saez-Rodriguez (2021) Integrated intra- and intercellular signaling knowledge for multicellular omics analysis. Molecular Systems Biology 17: e9923; DOI: 10.15252/msb.20209923
 
 [5] James S Nagai, Nils B Leimkühler, Michael T Schaub, Rebekka K Schneider, Ivan G Costa, CrossTalkeR: analysis and visualization of ligand–receptorne tworks, Bioinformatics, Volume 37, Issue 22, 15 November 2021, Pages 4263–4265, https://doi.org/10.1093/bioinformatics/btab370
+
+
+
+
+
+#library(LR2TF)
+library(Matrix)
+library(Seurat)
+#library(CrossTalkeR)
+library(tibble)
+library(dplyr)
+library(org.Mm.eg.db)
+library(org.Hs.eg.db)
+library(clusterProfiler)
+library(liana)
+library(decoupleR)
+library(reticulate)
+devtools::load_all("/home/vanessa/repositories/CrossTalkeR/")
+devtools::load_all("/home/vanessa/repositories/LR2TF/")
+reticulate::use_condaenv("py39")
+data(bone_marrow_stromal_cell_example, package = "LR2TF")
+table_ctr <- read.csv("/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/viper_olddorothea/LR/control_lr_ready.csv", row.names = 1)
+table_exp <- read.csv("/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/viper_olddorothea/LR/PMF,MF2_lr_ready.csv", row.names = 1)
+
+parameters <- list("out_path" = "/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/ulm_decouplerdorothea/",
+                   reg = "/decoupler_comparison/wmean_decouplerdorothea/decoupler_doro_human.csv",
+                   "organism" = "human",
+                   "celltype" = "new_annotation",
+                   "condition" = "protocol",
+                   "comparison_list" = list(c("PMF,MF2", "control")),
+                   "logfc" = 1,
+                   "pval" = 0.05)
+
+
+out_path <-  "/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/ulm_decouplerdorothea/"
+object_path <- "/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/viper_olddorothea/bone_marrow_stromal_example_data.h5ad"
+reg_path <- "/decoupler_comparison/wmean_decouplerdorothea/decoupler_doro_human.csv"
+
+LR2TF::run_py_decoupler_ulm(object_path, reg_path, out_path)
+
+results <- LR2TF::tf_activity_analysis(seuratobject = bone_marrow_stromal_cell_example,
+                                       tf_activities = "/home/vanessa/Projekte/CrossTalkeR/CTR_Testruns/decoupler_comparison/ulm_decouplerdorothea/decoupler_results.csv",
+                                       arguments_list = parameters)
+
+ctr_inptu <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["control"]], table_ctr, parameters$out_path, "control")
+exp_input <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["PMF_MF2"]], table_exp, parameters$out_path, "PMF_MF2")
+
+
+
