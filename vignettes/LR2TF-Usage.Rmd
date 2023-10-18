@@ -55,7 +55,7 @@ write.csv("/path/to/save/filterd_regulon.csv")
 
 ```
 
-Now it is possible to run the transcription factor activity prediction with decoupleR:
+Now it is possible to run the transcription factor activity prediction with decoupleR and the uml method:
 ```{python, include = TRUE, eval = FALSE}
 
 import scanpy as sc
@@ -65,9 +65,9 @@ import pandas as pd
 ann_data = sc.read_h5ad("/path/to/AnnData/object/anndata_object.h5ad")
 reg = pd.read_csv("/path/to/filterd_regulon.csv")
 
-dc.run_viper(mat=ann_data, net=reg, source='source', target='target', weight='weight', verbose=True, use_raw=False)
+dc.run_ulm( mat=ann_data, net=reg, source='source', target='target', weight='weight', verbose=True, use_raw=False)
 
-estimates = ann_data.obsm['viper_estimate']
+estimates =ann_data.obsm['ulm_estimate']
 estimates.to_csv("/path/to/save/decoupler_results.csv")
 
 ```
