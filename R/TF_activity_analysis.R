@@ -85,7 +85,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
               intracellular_network_cluster = intranet_cluster_list)
 
     saveRDS(tf, file = paste0(tf_path, "result_TF_object.RDS"))
-    saveRDS(seuratobject, file = paste0(tf_path, "TF_seurat_object.RDS"))
+    #saveRDS(seuratobject, file = paste0(tf_path, "TF_seurat_object.RDS"))
     return(tf)
   }
 
@@ -183,7 +183,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
               intracellular_network_cluster = intranet_cluster_list)
 
     saveRDS(tf, file = paste0(tf_path, "result_TF_object.RDS"))
-    saveRDS(seuratobject, file = paste0(tf_path, "TF_seurat_object.RDS"))
+    #saveRDS(seuratobject, file = paste0(tf_path, "TF_seurat_object.RDS"))
 
     return(tf)
   }
