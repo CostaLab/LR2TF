@@ -1,0 +1,132 @@
+---
+title: "LR2TF-Usage_old"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{LR2TF-Usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This is a guide for the usage of the LR2TF package. It is used to analyze scRNA data for transcription factor activities. The transcription factor activities are estimated using the DoRothEA[1] tool. Using the DoRothEA regulon and post-translational interactions from the Omnipath database[2,3,4], connections are made between transcription factors and ligands and receptors.
+
+The results can be combined with ligand-receptor interactions and then analyzed using CrossTalkeR (https://github.com/CostaLab/CrossTalkeR/) [5].
+
+## Installation
+The package can be installed directly from github:
+&nbsp;
+
+```{r, include = TRUE, eval = FALSE}
+library(devtools)
+install_github("CostaLab/LR2TF")
+
+library(remotes)
+install_github("CostaLab/LR2TF", build_vignettes = TRUE)
+```
+&nbsp;
+
+## Usage
+First the package and Seurat need to be imported:
+&nbsp;
+
+```{r eval = FALSE}
+library(LR2TF)
+library(Seurat)
+```
+&nbsp;
+
+In the package an example dataset it included that can be accessed:
+&nbsp;
+
+```{r, include = TRUE, eval = FALSE}
+data(bone_marrow_stromal_cell_example, package = "LR2TF")
+```
+&nbsp;
+
+Before the execution, some parameters need to be defined:
+&nbsp;
+
+1. Path to save the results to
+2. defining the confidence level of the dorothea regulon (A (strong) to E (low))
+3. the organism of the sample was extracted from
+4. Name of the meta-data field in the Seurat object of the cell annotation
+5. Name of the meta-data field in the Seurat object of the condition annotation
+6. List of condition comparison to be calculated
+
+&nbsp;
+
+```{r, include = TRUE, eval = FALSE}
+out_path = '/Path/to/result/directory'
+confidence_level = c("A", "B", "C", "D", "E")
+organism = "human"
+celltype_annotation = "annotation"
+condition_annotation = "protocol"
+comparison_list = list(c("control", "PMF,MF2"))
+```
+&nbsp;
+
+After defining the necessary parameter the transcription factor activity can be predicted by calling:
+&nbsp;
+
+```{r, include = TRUE, eval = FALSE}
+results = LR2TF::dorothea_tf_prediction(bone_marrow_stromal_cell_example, out_path, confidence_level, organism, condition_annotation, celltype_annotation, comparison_list)
+```
+&nbsp;
+
+As result an object containing three fields is obtained (here example for control condition):
+&nbsp;
+
+* results[["control"]][["cluster"]] -> cluster specific transcription factors
+* results[["control"]][["condition"]] -> condition specific transcription factors
+* results[["control_average_expression"]] -> average gene expression matrix of specified condition
+
+&nbsp;
+
+For the conversion into the CrossTalkeR input format and the connection to receptor and ligands, either the cluster or the condition specific transcription factors can be used.
+&nbsp;
+
+```{r, include = TRUE, eval = FALSE}
+result_table_control <- LR2TF::generate_CrossTalkeR_input_significant_table(results[["control"]][["condition"]], confidence_level, results[["control_average_expression"]])
+result_table_pmf <- LR2TF::generate_CrossTalkeR_input_significant_table(results[["PMF_MF2"]][["condition"]], confidence_level, results[["PMF_MF2_average_expression"]])
+```
+&nbsp;
+
+The last step is to combine previous results from ligand receptor interaction analyses (e.g. CellPhoneDB) with the transcription factor results:
+&nbsp;
+
+```{r, include = TRUE, eval = FALSE}
+control_lr_file = "/Path/to/CellphoneDB/output/ControlLR.csv"
+pmf_lr_file = "/Path/to/CellphoneDB/output/PMFLR.csv"
+
+LR2TF::combine_LR_and_TF(result_table_control, control_lr_file, out_path, "control")
+LR2TF::combine_LR_and_TF(result_table_pmf, pmf_lr_file, out_path, "PMF_MF2")
+
+```
+&nbsp;
+
+## Analysis of mouse data
+It is also possible to analyse scRNA-seq data from mouse samples. For this, the organism parameter must be set to "mouse" and the following function must be used when generating the CrossTalkeR input:
+&nbsp;
+
+```{r, include = TRUE, eval = FALSE}
+LR2TF::generate_CrossTalkeR_input_mouse_significant_table()
+```
+&nbsp;
+
+## References
+
+[1] Garcia-Alonso L, Holland CH, Ibrahim MM, Turei D, Saez-Rodriguez J. “Benchmark and integration of resources for the estimation of human transcription factor activities.” Genome Research. 2019. DOI: 10.1101/gr.240663.118.
+
+[2] A Valdeolivas, D Turei, A Gabor (2019) “OmnipathR: client for the OmniPath web service.” Bioconductor Package
+
+[3] D Turei, T Korcsmaros and J Saez-Rodriguez (2016) OmniPath: guidelines and gateway for literature-curated signaling pathway resources. Nature Methods 13 (12); PMID: 27898060
+
+[4] D Turei, A Valdeolivas, L Gul, N Palacio-Escat, M Klein, O Ivanova, M Olbei, A Gabor, F Theis, D Modos, T Korcsmaros and J Saez-Rodriguez (2021) Integrated intra- and intercellular signaling knowledge for multicellular omics analysis. Molecular Systems Biology 17: e9923; DOI: 10.15252/msb.20209923
+
+[5] James S Nagai, Nils B Leimkühler, Michael T Schaub, Rebekka K Schneider, Ivan G Costa, CrossTalkeR: analysis and visualization of ligand–receptorne tworks, Bioinformatics, Volume 37, Issue 22, 15 November 2021, Pages 4263–4265, https://doi.org/10.1093/bioinformatics/btab370

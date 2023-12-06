@@ -48,7 +48,7 @@ generate_CrossTalkeR_input <-
       tf <- as.character(tf_activities[row, "gene"])
       targets <- sorted_regulon[tf,][1]
       receptors <- R2TF[tf,][1]
-      tf_ligands <- intersect(targets[[1]], ligands[[1]])
+      tf_ligands <- intersect(targets[[1]], ligands)
       if (length(tf_ligands) > 0) {
         for (ligand in tf_ligands) {
           expressed <- FALSE
