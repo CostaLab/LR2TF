@@ -55,6 +55,7 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
           }
         }
       }
+    }
 
       for (cl in names(res)) {
         res[[cl]]$tf <- rownames(res[[cl]])
