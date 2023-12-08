@@ -34,17 +34,25 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
     ###
     res <- list()
     for (i in levels(seuratobject@meta.data$tf_annotation)) {
+      print(i)
       a_sub <- subset(seuratobject, cells = rownames(seuratobject@meta.data)[seuratobject@meta.data$tf_annotation == i & (seuratobject@meta.data$tf_condition %in% vs)])
       if (length(unique(a_sub@meta.data$tf_condition)) == 2) {
-        g <- as.character(a_sub@meta.data$tf_condition)
-        g <- factor(g, levels = c(vs1, vs2)) ###############################################
-        res[[i]] <- scran::findMarkers(as.matrix(a_sub@assays$tf_activities@scale.data), g)[[1]]
-        res[[i]] <- as.data.frame(res[[i]])
-        r <- sapply(pws, function(pw) rcompanion::wilcoxonR(as.vector(a_sub@assays$tf_activities@scale.data[pw,]), g))
-        nms <- sapply(stringr::str_split(names(r), "\\."), function(x)x[1])
-        names(r) <- nms
-        res[[i]][nms, "r"] <- r
-        res[[i]] <- res[[i]][nms,]
+        condition_table <- as.data.frame(a_sub@meta.data$tf_condition)
+        names(condition_table)[1] <- "condition"
+        metadata_counts <- condition_table %>%
+          group_by(condition) %>%
+          summarise(total_count = n())
+        if (all(metadata_counts$total_count > 10)) {
+          g <- as.character(a_sub@meta.data$tf_condition)
+          g <- factor(g, levels = c(vs1, vs2)) ###############################################
+          res[[i]] <- scran::findMarkers(as.matrix(a_sub@assays$tf_activities@scale.data), g)[[1]]
+          res[[i]] <- as.data.frame(res[[i]])
+          r <- sapply(pws, function(pw) rcompanion::wilcoxonR(as.vector(a_sub@assays$tf_activities@scale.data[pw,]), g))
+          nms <- sapply(stringr::str_split(names(r), "\\."), function(x)x[1])
+          names(r) <- nms
+          res[[i]][nms, "r"] <- r
+          res[[i]] <- res[[i]][nms,]
+        }
       }
     }
 
