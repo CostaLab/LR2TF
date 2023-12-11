@@ -34,7 +34,7 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
     res <- list()
     vs_sub <- subset(seuratobject, cells = rownames(seuratobject@meta.data)[seuratobject@meta.data$tf_condition %in% vs])
     if (length(unique(vs_sub@meta.data$tf_condition)) == 2) {
-      for (i in levels(vs_sub@meta.data$tf_annotation)) {
+      for (i in unique(vs_sub@meta.data$tf_annotation)) {
         a_sub <- subset(vs_sub, cells = rownames(vs_sub@meta.data)[vs_sub@meta.data$tf_annotation == i])
         if (length(unique(a_sub@meta.data$tf_condition)) == 2) {
           condition_table <- as.data.frame(a_sub@meta.data$tf_condition)
