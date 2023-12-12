@@ -719,7 +719,7 @@ validate_input_arguments <- function(arguments_list) {
     arguments_list$pval <- 0.05
   }
   if(is.null(arguments_list$num_cell_filter)) {
-    arguments_list$num_cell_filter <- 10
+    arguments_list$num_cell_filter <- 0
   }
   if (is.null(arguments_list$reg)) {
     arguments_list$reg = load_dorothea_regulon(arguments_list$organism)
