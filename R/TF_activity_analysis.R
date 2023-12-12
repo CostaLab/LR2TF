@@ -108,6 +108,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
     intranet_condition_list <- list()
     intranet_cluster_list <- list()
     for (name in names(seuratobject_list)) {
+      if (name %in% unique(unlist(arguments_list$comparison_list))){
       sub_object <- seuratobject_list[[name]]
 
       compared_tfs = data.frame(
@@ -170,6 +171,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
                                                                       gene_expression_list[[paste0(name, "_average_expression")]],
                                                                       arguments_list$reg,
                                                                       arguments_list$organism)
+    }
     }
 
     tf <- new("TFObj",
