@@ -10,7 +10,7 @@
 #' @import glue
 #' @import maditr
 #' @export
-condition_comparison_significant <- function(seuratobject, out_path, celltype_annotation, condition_annotation, comparison_list) {
+condition_comparison_significant <- function(seuratobject, out_path, celltype_annotation, condition_annotation, comparison_list, num_cell_filter) {
 
   DefaultAssay(object = seuratobject) <- "tf_activities"
   seuratobject <- ScaleData(seuratobject)
@@ -42,7 +42,7 @@ condition_comparison_significant <- function(seuratobject, out_path, celltype_an
           metadata_counts <- condition_table %>%
             group_by(condition) %>%
             summarise(total_count = n())
-          if (all(metadata_counts$total_count > 10)) {
+          if (all(metadata_counts$total_count > num_cell_filter)) {
             g <- as.character(a_sub@meta.data$tf_condition)
             g <- factor(g, levels = c(vs1, vs2)) ###############################################
             res[[i]] <- scran::findMarkers(as.matrix(a_sub@assays$tf_activities@scale.data), g)[[1]]

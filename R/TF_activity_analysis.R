@@ -92,7 +92,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
   else {
     out_path_compared <- paste0(tf_path, "compared")
     dir.create(out_path_compared)
-    compared_significant_tfs <- condition_comparison_significant(seuratobject, out_path_compared, arguments_list$celltype, arguments_list$condition, arguments_list$comparison_list)
+    compared_significant_tfs <- condition_comparison_significant(seuratobject, out_path_compared, arguments_list$celltype, arguments_list$condition, arguments_list$comparison_list, arguments_list$num_cell_filter)
 
     plot_condition_tf_activities(compared_significant_tfs, out_path_compared)
     plot_condition_tf_activities_compressed(compared_significant_tfs, out_path_compared)
