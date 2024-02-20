@@ -687,7 +687,7 @@ run_py_liana <- function(object_path, regulon_path, out_path) {
   run_liana(object_path, condition_field, cluster_field)
 }
 
-#' Loading old dorothea package regulons (default if no regulon is provided)
+#' Check arguments passed by User for validity
 #'
 #' @param arguments_list list of user defined arguments
 #' @return val_arguments validated list of arguments

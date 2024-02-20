@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{validate_input_arguments}
 \alias{validate_input_arguments}
-\title{Loading old dorothea package regulons (default if no regulon is provided)}
+\title{Check arguments passed by User for validity}
 \usage{
 validate_input_arguments(arguments_list)
 }
@@ -13,5 +13,5 @@ validate_input_arguments(arguments_list)
 val_arguments validated list of arguments
 }
 \description{
-Loading old dorothea package regulons (default if no regulon is provided)
+Check arguments passed by User for validity
 }

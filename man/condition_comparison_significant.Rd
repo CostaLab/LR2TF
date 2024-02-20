@@ -9,7 +9,8 @@ condition_comparison_significant(
   out_path,
   celltype_annotation,
   condition_annotation,
-  comparison_list
+  comparison_list,
+  num_cell_filter
 )
 }
 \arguments{

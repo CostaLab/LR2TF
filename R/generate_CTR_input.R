@@ -10,9 +10,8 @@
 #' @param confidence_level Confidence Level for the DoRothEA regulon used to get the transcription factor activities
 #' @param gene_activities Table with average gene expression levels
 #' @return A data frame with CrossTalkeR input
-#' @import OmnipathR
-#' @import dorothea
 #' @import dplyr
+#' @import tibble
 #' @export
 generate_CrossTalkeR_input <-
   function(tf_activities,
@@ -36,6 +35,9 @@ generate_CrossTalkeR_input <-
     sorted_regulon <- sorted_regulon %>%
       remove_rownames %>%
       tibble::column_to_rownames(var = 'tf')
+
+    tf_activities <- tf_activities %>%
+      filter(z_score > 0)
 
     output_df <- create_empty_CTR_dataframe()
 
@@ -111,8 +113,8 @@ generate_CrossTalkeR_input <-
 #' @param confidence_level Confidence Level for the DoRothEA regulon used to get the transcription factor activities
 #' @param gene_activities Table with average gene expression levels
 #' @return A data frame with CrossTalkeR input
-#' @import OmnipathR
-#' @import dorothea
+#' @import dplyr
+#' @import tibble
 #' @export
 generate_CrossTalkeR_input_mouse <-
   function(tf_activities,
@@ -134,6 +136,9 @@ generate_CrossTalkeR_input_mouse <-
     sorted_regulon <- sorted_regulon %>%
       remove_rownames %>%
       tibble::column_to_rownames(var = 'tf')
+
+    tf_activities <- tf_activities %>%
+      filter(z_score > 0)
 
     output_df <- create_empty_CTR_dataframe()
 
@@ -210,8 +215,6 @@ generate_CrossTalkeR_input_mouse <-
 #' @param confidence_level Confidence Level for the DoRothEA regulon used to get the transcription factor activities
 #' @param gene_activities Table with average gene expression levels
 #' @return A data frame with CrossTalkeR input
-#' @import OmnipathR
-#' @import dorothea
 #' @import dplyr
 #' @import tibble
 #' @export
@@ -246,6 +249,9 @@ generate_intracellular_network <-
         tibble::column_to_rownames(var = 'tf')
 
       #recept_regulon <- create_empty_Regulon_dataframe()
+
+      tf_activities <- tf_activities %>%
+        filter(z_score > 0)
 
       RTF_df <- data.frame(
         Receptor = character(),
