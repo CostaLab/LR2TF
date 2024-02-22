@@ -317,6 +317,7 @@ add_node_type <- function(df) {
 #' @import tibble
 #' @import tidyr
 #' @export
+
 combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_node_type = FALSE) {
 
   if (!is.data.frame(LR_prediction)) {
@@ -327,15 +328,22 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
     lr_table <- LR_prediction
   }
 
-  lr_ligands <- unique(lr_table$gene_A)
-  lr_receptors <- unique(lr_table$gene_B)
-  tf_receptor_interactions <- tf_table %>%
-    filter(gene_A %in% lr_receptors)
-  tf_ligand_interactions <- tf_table %>%
-    filter(gene_B %in% lr_ligands)
+  intra_connections <- tf_table[NULL,]
+  for (celltype in unique(append(lr_table$source, lr_table$target))) {
+    lr_filtered_ligands <- lr_table[lr_table$source == celltype,]
+    lr_filtered_receptors <- lr_table[lr_table$target == celltype,]
+    lr_ligands <- unique(lr_filtered_ligands$gene_A)
+    lr_receptors <- unique(lr_filtered_receptors$gene_B)
+    tf_table_receptors <- tf_table[tf_table$target == celltype & tf_table$type_gene_A == "Receptor",]
+    tf_table_ligands <- tf_table[tf_table$source == celltype & tf_table$type_gene_B == "Ligand",]
+    tf_receptor_interactions <- tf_table_receptors %>%
+      filter(gene_A %in% lr_receptors)
+    tf_ligand_interactions <- tf_table_ligands %>%
+      filter(gene_B %in% lr_ligands)
+    intra_connections <- rbind(intra_connections, tf_receptor_interactions, tf_ligand_interactions)
+  }
 
-  complete_interactions <- rbind(tf_receptor_interactions, tf_ligand_interactions)
-  complete_interactions <- rbind(complete_interactions, lr_table)
+  complete_interactions <- rbind(intra_connections, lr_table)
   if (add_node_type) {
     complete_interactions <- add_node_type(complete_interactions)
   }
@@ -343,6 +351,7 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
   write.csv(complete_interactions, paste0(out_path, "CrossTalkeR_input_", condition, ".csv"), row.names = FALSE)
   return(complete_interactions)
 }
+
 
 #' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
 #'
@@ -719,16 +728,16 @@ validate_input_arguments <- function(arguments_list) {
   if (is.null(arguments_list$pval)) {
     arguments_list$pval <- 0.05
   }
-  if(is.null(arguments_list$num_cell_filter)) {
+  if (is.null(arguments_list$num_cell_filter)) {
     arguments_list$num_cell_filter <- 0
   }
   if (is.null(arguments_list$reg)) {
     arguments_list$reg = load_dorothea_regulon(arguments_list$organism)
   } else {
-     if (typeof(arguments_list$reg) == "character") {
-       arguments_list$reg <-read.csv(arguments_list$reg, header = TRUE)
+    if (typeof(arguments_list$reg) == "character") {
+      arguments_list$reg <- read.csv(arguments_list$reg, header = TRUE)
     }
-    if(!all(c("source", "target", "weight") %in% names(arguments_list$reg))){
+    if (!all(c("source", "target", "weight") %in% names(arguments_list$reg))) {
       stop("Not all necessary columns found in regulon table! Please make sure that the regulon has the columns source, target and weight!")
     }
   }
