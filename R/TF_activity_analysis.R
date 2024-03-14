@@ -55,6 +55,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       # write.csv(seuratobject.averages[["RNA"]], file =
       #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
       #          name, '.csv'))
+      colnames(sub_object.averages[["RNA"]]) <- unique(sub_object[[arguments_list$celltype]][[1]])
 
       tf_activity_scores = get_significant_tfs_single(sub_object, name, tf_path, pval = arguments_list$pval, log2fc = arguments_list$logfc)
       result_list[[name]] = tf_activity_scores
@@ -137,7 +138,7 @@ tf_activity_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       # write.csv(sub_object.averages[["RNA"]], file =
       #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
       #          name, '.csv'))
-
+      colnames(sub_object.averages[["RNA"]]) <- unique(sub_object[[arguments_list$celltype]][[1]])
       tf_activity_scores = get_significant_tfs(sub_object,
                                                name,
                                                tf_path,
