@@ -28,12 +28,13 @@ plot_condition_tf_activities <-
       tag_mapping = nm_df[c("tf", "tag", "CellType")]
       tag_mapping = dcast(tag_mapping, tf ~ CellType, value.var = "tag")
       row.names(tag_mapping) = tag_mapping$tf
+      tag_mapping$tf <- NULL
 
       nm_df_short = nm_df[c("r", "tf", "CellType")]
       nm_df_clust = tapply(nm_df_short$r, list(tf = nm_df_short$tf, CellType = nm_df_short$CellType), mean)
       nm_df_clust = data.frame(nm_df_clust)
       nm_df_clust = as.matrix(nm_df_clust)
-
+      colnames(tag_mapping) = colnames(nm_df_clust)
       fh = function(x) fastcluster::hclust(dist(x))
       p <- Heatmap(nm_df_clust, name = "r", cluster_columns = fh, width = ncol(nm_df_clust) * unit(15, "mm"), row_title = "Transcription Factor", column_title = "Cell Type",
                    height = nrow(nm_df_clust) * unit(4, "mm"), cell_fun = function(j, i, x, y, width, height, fill) {
