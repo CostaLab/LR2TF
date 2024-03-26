@@ -342,12 +342,16 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
       filter(gene_B %in% lr_ligands)
     intra_connections <- rbind(intra_connections, tf_receptor_interactions, tf_ligand_interactions)
   }
-
+  intra_connections$all_pair <- paste0(intra_connections$source, "/",
+                                       intra_connections$gene_A, "/",
+                                       intra_connections$target, "/",
+                                       intra_connections$gene_B)
+  intra_connections <- intra_connections[!duplicated(intra_connections$all_pair), ]
+  intra_connections$all_pair <- NULL
   complete_interactions <- rbind(intra_connections, lr_table)
   if (add_node_type) {
     complete_interactions <- add_node_type(complete_interactions)
   }
-  complete_interactions <- unique(complete_interactions)
   write.csv(complete_interactions, paste0(out_path, "CrossTalkeR_input_", condition, ".csv"), row.names = FALSE)
   return(complete_interactions)
 }
