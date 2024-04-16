@@ -17,7 +17,7 @@ generate_CrossTalkeR_input <-
   function(tf_activities,
            gene_expression,
            regulon = NA) {
-    if (any(tf_activity_scores[["condition"]]$z_score > 0)) {
+    if (any(tf_activities$z_score > 0)) {
       regulon <- regulon %>%
         rename(tf = source)
 
@@ -122,7 +122,7 @@ generate_CrossTalkeR_input_mouse <-
   function(tf_activities,
            gene_expression,
            regulon = NA) {
-    if (any(tf_activity_scores[["condition"]]$z_score > 0)) {
+    if (any(tf_activities$z_score > 0)) {
       ligands <- converted_ligands
 
       R2TF <- aggregate(RTF_DB_mouse$receptor ~ RTF_DB_mouse$tf, FUN = c)
@@ -229,7 +229,7 @@ generate_intracellular_network <-
            regulon,
            organism = "human") {
     if (dim(tf_activities)[1] > 0) {
-      if (any(tf_activity_scores[["condition"]]$z_score > 0)) {
+      if (any(tf_activities$z_score > 0)) {
         if (organism == "human") {
           R2TF <- aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
           colnames(R2TF) <- c('tf', 'receptors')
