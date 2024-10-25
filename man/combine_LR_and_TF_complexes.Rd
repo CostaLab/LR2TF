@@ -21,6 +21,9 @@ combine_LR_and_TF_complexes(
 
 \item{condition}{sample condition of data}
 }
+\value{
+complete_interactions table with all interactions
+}
 \description{
 Description
 }

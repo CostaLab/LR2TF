@@ -364,6 +364,7 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
 #' @param LR_prediction path to or dataframe with ligand-receptor interaction prediction
 #' @param out_path path to save results
 #' @param condition sample condition of data
+#' @return complete_interactions table with all interactions
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
