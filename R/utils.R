@@ -317,7 +317,6 @@ add_node_type <- function(df) {
 #' @import tibble
 #' @import tidyr
 #' @export
-
 combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_node_type = FALSE) {
 
   if (!is.data.frame(LR_prediction)) {
@@ -346,6 +345,81 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
                                        intra_connections$gene_A, "/",
                                        intra_connections$target, "/",
                                        intra_connections$gene_B)
+  intra_connections <- intra_connections[!duplicated(intra_connections$all_pair), ]
+  intra_connections$all_pair <- NULL
+  complete_interactions <- rbind(intra_connections, lr_table)
+  if (add_node_type) {
+    complete_interactions <- add_node_type(complete_interactions)
+  }
+  write.csv(complete_interactions, paste0(out_path, "CrossTalkeR_input_", condition, ".csv"), row.names = FALSE)
+  return(complete_interactions)
+}
+
+
+#' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions considering receptor complexes
+#'
+#' Description
+#'
+#' @param tf_table table with tf interactions
+#' @param LR_prediction path to or dataframe with ligand-receptor interaction prediction
+#' @param out_path path to save results
+#' @param condition sample condition of data
+#' @import dplyr
+#' @import tibble
+#' @import tidyr
+#' @export
+combine_LR_and_TF_complexes <- function(tf_table, LR_prediction, out_path, condition, add_node_type = FALSE) {
+  if (!is.data.frame(LR_prediction)) {
+    lr_table <- read.csv(LR_prediction)
+    row.names(lr_table) <- lr_table$X
+    lr_table$X <- NULL
+  } else {
+    lr_table <- LR_prediction
+  }
+
+  intra_connections <- tf_table[NULL, ]
+  for (celltype in unique(append(lr_table$source, lr_table$target))) {
+    lr_filtered_ligands <- lr_table[lr_table$source == celltype, ]
+    lr_filtered_receptors <- lr_table[lr_table$target == celltype, ]
+    lr_ligands <- unique(lr_filtered_ligands$gene_A)
+    lr_receptors <- unique(lr_filtered_receptors$gene_B)
+
+    contains_complex <- grepl("_", lr_receptors)
+    R_with_complex <- lr_receptors[contains_complex]
+    R_without_complex <- lr_receptors[!contains_complex]
+
+    tf_table_receptors <- tf_table[tf_table$target == celltype & tf_table$type_gene_A == "Receptor", ]
+    tf_receptor_interactions <- tf_table_receptors %>%
+      filter(gene_A %in% R_without_complex)
+
+    complex_df <- CTR_LR[0, ]
+    if (length(R_with_complex) > 0) {
+      for (i in 1:length(R_with_complex)) {
+        complex <- R_with_complex[i]
+        receptors <- strsplit(complex, "_")[[1]]
+        R_TF_with_complex <- tf_table_receptors[tf_table_receptors$gene_A %in% receptors, ]
+        if (nrow(R_TF_with_complex) == 0) {
+          next
+        }
+        unique(R_TF_with_complex)
+        R_TF_with_complex$gene_A <- complex
+        complex_df <- rbind(complex_df, R_TF_with_complex)
+      }
+      complex_df <- complex_df[!duplicated(complex_df), ]
+    }
+    tf_receptor_interactions <- rbind(tf_receptor_interactions, complex_df)
+
+    tf_table_ligands <- tf_table[tf_table$source == celltype & tf_table$type_gene_B == "Ligand", ]
+    tf_ligand_interactions <- tf_table_ligands %>%
+      filter(gene_B %in% lr_ligands)
+    intra_connections <- rbind(intra_connections, tf_receptor_interactions, tf_ligand_interactions)
+  }
+  intra_connections$all_pair <- paste0(
+    intra_connections$source, "/",
+    intra_connections$gene_A, "/",
+    intra_connections$target, "/",
+    intra_connections$gene_B
+  )
   intra_connections <- intra_connections[!duplicated(intra_connections$all_pair), ]
   intra_connections$all_pair <- NULL
   complete_interactions <- rbind(intra_connections, lr_table)
