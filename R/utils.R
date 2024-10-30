@@ -393,7 +393,7 @@ combine_LR_and_TF_complexes <- function(tf_table, LR_prediction, out_path, condi
     tf_receptor_interactions <- tf_table_receptors %>%
       filter(gene_A %in% R_without_complex)
 
-    complex_df <- CTR_LR[0, ]
+    complex_df <- tf_table[0, ]
     if (length(R_with_complex) > 0) {
       for (i in 1:length(R_with_complex)) {
         complex <- R_with_complex[i]
