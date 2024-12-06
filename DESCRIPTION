@@ -28,7 +28,7 @@ Imports:
     textshape,
     qpdf,
     maditr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Depends: 
     R (>= 2.10)
 Suggests: 

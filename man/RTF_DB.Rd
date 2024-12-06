@@ -3,9 +3,9 @@
 \docType{data}
 \name{RTF_DB}
 \alias{RTF_DB}
-\title{Dataframe with pre-computed receptor to transcription factor connections}
+\title{Dataframe with pre-computed receptor to transcription factor connections 2nd version}
 \format{
-An object of class \code{data.frame} with 29721 rows and 2 columns.
+An object of class \code{data.frame} with 16135 rows and 2 columns.
 }
 \usage{
 RTF_DB

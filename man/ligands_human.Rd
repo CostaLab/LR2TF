@@ -5,7 +5,7 @@
 \alias{ligands_human}
 \title{List of annotated ligands from OmnipathR for human data}
 \format{
-A list with 9708 elements
+An object of class \code{character} of length 9708.
 }
 \usage{
 ligands_human
