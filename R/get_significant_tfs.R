@@ -10,7 +10,7 @@
 #' @param tf_condition_significant condition comparison results
 #' @return A data frame with transcription factor activity scores per cell type
 #' @export
-get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc, tf_condition_significant = NA) {
+get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc, tf_condition_significant = NA, condition_comparison = FALSE) {
   single_result_path <- paste0(out_path, condition)
   dir.create(single_result_path)
 
@@ -120,7 +120,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
   res[["cluster"]] <- seuratobject.markers[c("gene", "tag", "cluster", "z_score")]
   write.csv(res[["cluster"]], file = paste0(single_result_path, '/significant_cluster_tf_results', '_', condition, '.csv'))
 
-  if(!is.na(tf_condition_significant)) {
+  if(!is.na(condition_comparison)) {
     map_z_value <- function(gene, cluster) {
     if (gene %in% rownames(summarized_tf_scores_df)) {
       z_score = summarized_tf_scores_df[as.character(gene), as.character(cluster)]

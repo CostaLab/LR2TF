@@ -177,7 +177,8 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
           tf_path,
           pval = arguments_list$pval,
           log2fc = arguments_list$logfc,
-          compared_tfs
+          compared_tfs,
+          TRUE
         )
         result_condition_list[[name]] <- tf_activity_scores[["condition"]]
         result_cluster_list[[name]] <- tf_activity_scores[["cluster"]]
