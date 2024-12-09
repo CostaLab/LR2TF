@@ -25,7 +25,7 @@ generate_CrossTalkeR_input <-
 
       if(organism == "human") {
         ligands <- ligands_human
-        R2TF <- aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
+        R2TF <- aggregate(RTF_DB$receptor ~ RTF_DB$tf, FUN = c)
       } else if(organism == "mouse") {
         ligands <- ligands_mouse
         R2TF <- aggregate(RTF_DB_mouse$receptor ~ RTF_DB_mouse$tf, FUN = c)
@@ -132,7 +132,7 @@ generate_intracellular_network <-
     if (dim(tf_activities)[1] > 0) {
       if (any(tf_activities$z_score > 0)) {
         if (organism == "human") {
-          R2TF <- aggregate(RTF_DB_2$receptor ~ RTF_DB_2$tf, FUN = c)
+          R2TF <- aggregate(RTF_DB$receptor ~ RTF_DB$tf, FUN = c)
           colnames(R2TF) <- c('tf', 'receptors')
           R2TF <- R2TF %>%
             tibble::remove_rownames() %>%
