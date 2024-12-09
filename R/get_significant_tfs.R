@@ -89,10 +89,10 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
   write.csv(summarized_tf_scores_df, file = paste0(single_result_path, '/unfiltered_tf_scores', '_', condition, '.csv'))
 
   col.num <- which(rownames(summarized_tf_scores_df) %in% rownames(tag_mapping))
-  filtered_tf_scores_df <- summarized_tf_scores_df[sort(c(col.num)), ]
+  filtered_tf_scores_df <- as.data.frame(summarized_tf_scores_df[sort(c(col.num)), ])
   write.csv(filtered_tf_scores_df, file = paste0(single_result_path, '/tf_scores', '_', condition, '.csv'))
 
-  tf_scores_variable_table <- save_variable_tf_scores(filtered_tf_scores_df, condition, single_result_path)
+  tf_scores_variable_table <- save_variable_tf_scores(summarized_tf_scores, condition, single_result_path)
 
   message("Plotting top variables tf activities")
   plot_highly_variable_tfs(filtered_tf_scores_df, condition,
