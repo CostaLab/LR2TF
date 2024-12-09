@@ -95,7 +95,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
   tf_scores_variable_table <- save_variable_tf_scores(summarized_tf_scores, condition, single_result_path)
 
   message("Plotting top variables tf activities")
-  plot_highly_variable_tfs(filtered_tf_scores_df, condition,
+  plot_highly_variable_tfs(summarized_tf_scores, condition,
                            single_result_path, number_of_clusters)
 
   plot_tf_activity_compressed(filtered_tf_scores_df, condition, single_result_path)
