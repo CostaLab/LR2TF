@@ -113,8 +113,6 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
     compared_significant_tfs <- condition_comparison_significant(
       seuratobject,
       out_path_compared,
-      arguments_list$celltype,
-      arguments_list$condition,
       arguments_list$comparison_list,
       arguments_list$num_cell_filter
     )
