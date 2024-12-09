@@ -12,7 +12,6 @@
 #' @import stringr
 #' @export
 save_variable_tf_scores <- function(tf_scores, condition, out_path) {
-
   highly_variable_tfs_all <- tf_scores %>%
     group_by(tf) %>%
     mutate(var = var(avg)) %>%
@@ -25,11 +24,10 @@ save_variable_tf_scores <- function(tf_scores, condition, out_path) {
     spread(tf, avg) %>%
     data.frame(row.names = 1, check.names = FALSE)
   tf_scores <- t(summarized_viper_scores_df_all)
-  write.csv(tf_scores, file = paste0(out_path, '/variable_tf_scores', '_', condition, '.csv'))
+  write.csv(tf_scores, file = paste0(out_path, "/variable_tf_scores", "_", condition, ".csv"))
 
   return(tf_scores)
 }
-
 
 #' Adds gene type to the name of the gene
 #'
@@ -55,7 +53,6 @@ add_node_type <- function(df) {
     mutate(gene_B = ifelse(type_gene_B == "Transcription Factor", paste0(gene_B, "|TF"), gene_B))
 }
 
-
 #' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
 #'
 #' Description
@@ -69,7 +66,6 @@ add_node_type <- function(df) {
 #' @import tidyr
 #' @export
 combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_node_type = FALSE) {
-
   if (!is.data.frame(LR_prediction)) {
     lr_table <- read.csv(LR_prediction)
     row.names(lr_table) <- lr_table$X
@@ -78,24 +74,26 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
     lr_table <- LR_prediction
   }
 
-  intra_connections <- tf_table[NULL,]
+  intra_connections <- tf_table[NULL, ]
   for (celltype in unique(append(lr_table$source, lr_table$target))) {
-    lr_filtered_ligands <- lr_table[lr_table$source == celltype,]
-    lr_filtered_receptors <- lr_table[lr_table$target == celltype,]
+    lr_filtered_ligands <- lr_table[lr_table$source == celltype, ]
+    lr_filtered_receptors <- lr_table[lr_table$target == celltype, ]
     lr_ligands <- unique(lr_filtered_ligands$gene_A)
     lr_receptors <- unique(lr_filtered_receptors$gene_B)
-    tf_table_receptors <- tf_table[tf_table$target == celltype & tf_table$type_gene_A == "Receptor",]
-    tf_table_ligands <- tf_table[tf_table$source == celltype & tf_table$type_gene_B == "Ligand",]
+    tf_table_receptors <- tf_table[tf_table$target == celltype & tf_table$type_gene_A == "Receptor", ]
+    tf_table_ligands <- tf_table[tf_table$source == celltype & tf_table$type_gene_B == "Ligand", ]
     tf_receptor_interactions <- tf_table_receptors %>%
       filter(gene_A %in% lr_receptors)
     tf_ligand_interactions <- tf_table_ligands %>%
       filter(gene_B %in% lr_ligands)
     intra_connections <- rbind(intra_connections, tf_receptor_interactions, tf_ligand_interactions)
   }
-  intra_connections$all_pair <- paste0(intra_connections$source, "/",
-                                       intra_connections$gene_A, "/",
-                                       intra_connections$target, "/",
-                                       intra_connections$gene_B)
+  intra_connections$all_pair <- paste0(
+    intra_connections$source, "/",
+    intra_connections$gene_A, "/",
+    intra_connections$target, "/",
+    intra_connections$gene_B
+  )
   intra_connections <- intra_connections[!duplicated(intra_connections$all_pair), ]
   intra_connections$all_pair <- NULL
   complete_interactions <- rbind(intra_connections, lr_table)
@@ -105,7 +103,6 @@ combine_LR_and_TF <- function(tf_table, LR_prediction, out_path, condition, add_
   write.csv(complete_interactions, paste0(out_path, "CrossTalkeR_input_", condition, ".csv"), row.names = FALSE)
   return(complete_interactions)
 }
-
 
 #' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions considering receptor complexes
 #'
@@ -182,7 +179,6 @@ combine_LR_and_TF_complexes <- function(tf_table, LR_prediction, out_path, condi
   return(complete_interactions)
 }
 
-
 #' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
 #'
 #' Description
@@ -196,7 +192,6 @@ combine_LR_and_TF_complexes <- function(tf_table, LR_prediction, out_path, condi
 #' @import tidyr
 #' @export
 combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition) {
-
   if (!is.data.frame(LR_prediction)) {
     lr_table <- read.csv(LR_prediction)
     row.names(lr_table) <- lr_table$X
@@ -210,7 +205,6 @@ combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition)
 
   write.csv(complete_interactions, paste0(out_path, "CrossTalkeR_input_", condition, ".csv"), row.names = FALSE)
 }
-
 
 #' Create an empty dataframe with CrossTalkeR input table format
 #'
@@ -244,18 +238,17 @@ add_entry_to_CTR_dataframe <- function(source, target, gene_A, gene_B, type_gene
     )
   names(df) <-
     c(
-      'source',
-      'target',
-      'gene_A',
-      'gene_B',
-      'type_gene_A',
-      'type_gene_B',
+      "source",
+      "target",
+      "gene_A",
+      "gene_B",
+      "type_gene_A",
+      "type_gene_B",
       "MeanLR"
     )
 
   return(df)
 }
-
 
 #' Create an empty dataframe with CrossTalkeR input table format
 #'
@@ -285,11 +278,11 @@ add_entry_to_Regulon_dataframe <- function(celltype, Receptor, TF, Target_Gene, 
     )
   names(df) <-
     c(
-      'celltype',
-      'Receptor',
-      'TF',
-      'Target_Gene',
-      'TF_Score'
+      "celltype",
+      "Receptor",
+      "TF",
+      "Target_Gene",
+      "TF_Score"
     )
 
   return(df)
@@ -304,7 +297,6 @@ add_entry_to_Regulon_dataframe <- function(celltype, Receptor, TF, Target_Gene, 
 convert_seurat_to_anndata <- function(seuratobject, out_path) {
   sceasy::convertFormat(seuratobject, from = "seurat", to = "anndata", outFile = paste0(out_path, "anndata_object.h5ad"))
 }
-
 
 #' Check arguments passed by User for validity
 #'
@@ -341,13 +333,20 @@ validate_input_arguments <- function(arguments_list) {
     arguments_list$num_cell_filter <- 0
   }
   if (is.null(arguments_list$reg)) {
-    arguments_list$reg = load_dorothea_regulon(arguments_list$organism)
+    arguments_list$reg <- load_dorothea_regulon(arguments_list$organism)
   } else {
     if (typeof(arguments_list$reg) == "character") {
       arguments_list$reg <- read.csv(arguments_list$reg, header = TRUE)
     }
     if (!all(c("source", "target", "weight") %in% names(arguments_list$reg))) {
       stop("Not all necessary columns found in regulon table! Please make sure that the regulon has the columns source, target and weight!")
+    }
+  }
+  if (is.null(arguments_list$plot)) {
+    arguments_list$plot <- TRUE
+  } else {
+    if (!is.boolean(arguments_list$plot)) {
+      stop("Plot argument must be a boolean value!")
     }
   }
   return(arguments_list)
