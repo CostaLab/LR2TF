@@ -20,7 +20,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
 
   seuratobject.markers <- FindAllMarkers(seuratobject, only.pos = TRUE,
                                          min.pct = 0, logfc.threshold = 0,
-                                         verbose = FALSE)
+                                         verbose = FALSE, slot = "scale.data")
   write.csv(seuratobject.markers, file =
     paste0(single_result_path, '/all_specificmarker_',
            '_', condition, '.csv'))
