@@ -42,8 +42,11 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
 
   Idents(object = seuratobject) <- arguments_list$condition
   seuratobject[["tf_condition"]] <- Idents(object = seuratobject)
+
   Idents(object = seuratobject) <- arguments_list$celltype
-  seuratobject[["tf_annotation"]] <- Idents(object = seuratobject)
+  annotation_df <- data.frame(cell_type = seurat_object@meta.data[[arguments_list$celltype]], row.names = rownames(seurat_object@meta.data))
+  celltype_df$cell_type <- gsub("_", "-", celltype_df$cell_type)
+  seurat_object@meta.data$tf_annotation <- celltype_df$cell_type
 
   if (is.na(arguments_list$comparison_list)[[1]]) {
     result_list <- list()
@@ -61,14 +64,14 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       name <- str_replace_all(name, "[,;.:-]", "_")
 
       sub_object.averages <- AverageExpression(sub_object,
-        group.by = arguments_list$celltype,
+        group.by = arguments_list$tf_annotation,
         assays = "RNA"
       )
       # write.csv(seuratobject.averages[["RNA"]], file =
       #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
       #          name, '.csv'))
 
-      colnames(sub_object.averages[["RNA"]]) <- unique(sub_object[[arguments_list$celltype]][[1]])
+      #colnames(sub_object.averages[["RNA"]]) <- unique(sub_object[[arguments_list$celltype]][[1]])
 
       tf_activity_scores <- get_significant_tfs(sub_object,
         name,
@@ -110,13 +113,23 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
   } else {
     out_path_compared <- paste0(tf_path, "compared")
     dir.create(out_path_compared)
-    compared_significant_tfs <- condition_comparison_significant(
+
+    if(arguments_list$Seurat) {
+      compared_significant_tfs <- condition_comparison_significant_Seurat(
       seuratobject,
       out_path_compared,
       arguments_list$comparison_list,
-      arguments_list$num_cell_filter
-    )
-
+      arguments_list$num_cell_filter,
+      arguments_list$test_type)
+    } else {
+      compared_significant_tfs <- condition_comparison_significant(
+      seuratobject,
+      out_path_compared,
+      arguments_list$comparison_list,
+      arguments_list$num_cell_filter,
+      arguments_list$test_type)
+    }
+    
     plot_condition_tf_activities(compared_significant_tfs, out_path_compared)
     plot_condition_tf_activities_compressed(compared_significant_tfs, out_path_compared)
 
@@ -146,10 +159,17 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
               tf_condition_significant,
               FDR < as.double(arguments_list$pval)
             )
-            tf_condition_significant <- filter(
+            if(arguments_list$test_type == "wilcox") {
+              tf_condition_significant <- filter(
+                tf_condition_significant,
+                logFC > (0.5 + as.double(arguments_list$logfc)) | logFC < (0.5 - as.double(arguments_list$logfc))
+              )
+            } else {
+              tf_condition_significant <- filter(
               tf_condition_significant,
               logFC > as.double(arguments_list$logfc) | logFC < (0 - as.double(arguments_list$logfc))
             )
+            }
             tf_condition_significant <- tf_condition_significant[c("tf", "tag", "CellType")]
             tf_condition_significant <- tf_condition_significant %>%
               rename(

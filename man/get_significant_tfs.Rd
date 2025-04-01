@@ -10,7 +10,8 @@ get_significant_tfs(
   out_path,
   pval,
   log2fc,
-  tf_condition_significant = NA
+  tf_condition_significant = NA,
+  condition_comparison = FALSE
 )
 }
 \arguments{

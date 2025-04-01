@@ -349,5 +349,15 @@ validate_input_arguments <- function(arguments_list) {
       stop("Plot argument must be a boolean value!")
     }
   }
+  if (is.null(arguments_list$test_type)) {
+    arguments_list$test_type <- "binom"
+  } else {
+    if (!any(arguments_list$test_type %in% c("binom", "t", "wilcox"))) {
+      arguments_list$test_type <- "binom"
+    }
+  }
+  if (is.null(arguments_list$Seurat)) {
+    arguments_list$Seurat <- FALSE
+  }
   return(arguments_list)
 }
