@@ -34,7 +34,7 @@ plot_condition_tf_activities <-
       nm_df_clust <- tapply(nm_df_short$r, list(tf = nm_df_short$tf, CellType = nm_df_short$CellType), mean)
       nm_df_clust <- data.frame(nm_df_clust)
       nm_df_clust <- as.matrix(nm_df_clust)
-      colnames(tag_mapping) <- colnames(nm_df_clust)
+      #colnames(tag_mapping) <- colnames(nm_df_clust)
       fh <- function(x) fastcluster::hclust(dist(x))
       p <- Heatmap(nm_df_clust,
         name = "r", cluster_columns = fh, width = ncol(nm_df_clust) * unit(15, "mm"), row_title = "Transcription Factor", column_title = "Cell Type",
