@@ -45,8 +45,8 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
 
   Idents(object = seuratobject) <- arguments_list$celltype
   annotation_df <- data.frame(cell_type = seurat_object@meta.data[[arguments_list$celltype]], row.names = rownames(seurat_object@meta.data))
-  celltype_df$cell_type <- gsub("_", "-", celltype_df$cell_type)
-  seurat_object@meta.data$tf_annotation <- celltype_df$cell_type
+  annotation_df$cell_type <- gsub("_", "-", annotation_df$cell_type)
+  seurat_object@meta.data$tf_annotation <- annotation_df$cell_type
 
   if (is.na(arguments_list$comparison_list)[[1]]) {
     result_list <- list()
