@@ -186,13 +186,13 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
         name <- str_replace_all(name, "[,;.:-]", "_")
 
         sub_object.averages <- AverageExpression(sub_object,
-          group.by = arguments_list$celltype,
+          group.by = arguments_list$tf_annotation,
           assays = "RNA"
         )
         # write.csv(sub_object.averages[["RNA"]], file =
         #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
         #          name, '.csv'))
-        colnames(sub_object.averages[["RNA"]]) <- unique(sub_object[[arguments_list$celltype]][[1]])
+        #colnames(sub_object.averages[["RNA"]]) <- unique(sub_object[[arguments_list$celltype]][[1]])
         tf_activity_scores <- get_significant_tfs(sub_object,
           name,
           tf_path,
