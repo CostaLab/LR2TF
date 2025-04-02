@@ -350,7 +350,7 @@ validate_input_arguments <- function(arguments_list) {
     }
   }
   if (is.null(arguments_list$test_type)) {
-    arguments_list$test_type <- "binom"
+    arguments_list$test_type <- "t"
   } else {
     if (!any(arguments_list$test_type %in% c("binom", "t", "wilcox"))) {
       arguments_list$test_type <- "binom"

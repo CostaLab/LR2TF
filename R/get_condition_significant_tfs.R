@@ -38,7 +38,6 @@ condition_comparison_significant <- function(seuratobject, out_path, comparison_
           if (all(metadata_counts$total_count > num_cell_filter)) {
             g <- as.character(a_sub@meta.data$tf_condition)
             g <- factor(g, levels = c(cond1, cond2))
-            print(test_type)
             res[[i]] <- scran::findMarkers(as.matrix(a_sub@assays$tf_activities@scale.data), g, test.type = test_type)[[1]]
             res[[i]] <- as.data.frame(res[[i]])
             r <- sapply(all_tf_list, function(single_tf) rcompanion::wilcoxonR(as.vector(a_sub@assays$tf_activities@scale.data[single_tf, ]), g))
