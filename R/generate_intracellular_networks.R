@@ -47,6 +47,9 @@ generate_CrossTalkeR_input <-
 
       tf_activities <- tf_activities %>%
         filter(z_score > 0)
+      annotation_df <- data.frame(cell_type = tf_activities$cluster, row.names = rownames(tf_activities))
+      annotation_df$cell_type <- gsub("_", "-", annotation_df$cell_type)
+      tf_activities$cluster_renamed <- annotation_df$cell_type
 
       output_df <- create_empty_CTR_dataframe()
 
@@ -64,7 +67,7 @@ generate_CrossTalkeR_input <-
           for (ligand in tf_ligands) {
             expressed <- FALSE
             if (ligand %in% rownames(gene_expression)) {
-              ex_value <- gene_expression[ligand, tf_activities[row, "cluster"]]
+              ex_value <- gene_expression[ligand, tf_activities[row, "cluster_renamed"]]
               if (ex_value != 0) {
                 expressed <- TRUE
               }
@@ -158,6 +161,9 @@ generate_intracellular_network <-
 
         tf_activities <- tf_activities %>%
           filter(z_score > 0)
+        annotation_df <- data.frame(cell_type = tf_activities$cluster, row.names = rownames(tf_activities))
+        annotation_df$cell_type <- gsub("_", "-", annotation_df$cell_type)
+        tf_activities$cluster_renamed <- annotation_df$cell_type
 
         RTF_df <- data.frame(
           Receptor = character(),
@@ -181,7 +187,7 @@ generate_intracellular_network <-
               for (target in targets) {
                 expressed <- FALSE
                 if (target %in% rownames(gene_expression)) {
-                  ex_value <- gene_expression[target, tf_activities[row, "cluster"]]
+                  ex_value <- gene_expression[target, tf_activities[row, "cluster_renamed"]]
                   if (ex_value != 0) {
                     expressed <- TRUE
                   }
