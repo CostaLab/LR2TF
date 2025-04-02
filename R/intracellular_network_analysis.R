@@ -65,7 +65,7 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       name <- str_replace_all(name, "[,;.:-]", "_")
 
       sub_object.averages <- AverageExpression(sub_object,
-        group.by = arguments_list$tf_annotation,
+        group.by = "tf_annotation",
         assays = "RNA"
       )
       # write.csv(seuratobject.averages[["RNA"]], file =
@@ -186,7 +186,7 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
         name <- str_replace_all(name, "[,;.:-]", "_")
 
         sub_object.averages <- AverageExpression(sub_object,
-          group.by = arguments_list$tf_annotation,
+          group.by = "tf_annotation",
           assays = "RNA"
         )
         # write.csv(sub_object.averages[["RNA"]], file =
