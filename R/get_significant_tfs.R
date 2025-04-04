@@ -120,7 +120,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
   res[["cluster"]] <- seuratobject.markers[c("gene", "tag", "cluster", "z_score")]
   write.csv(res[["cluster"]], file = paste0(single_result_path, '/significant_cluster_tf_results', '_', condition, '.csv'))
 
-  if(!is.na(tf_condition_significant)) {
+  if(condition_comparison) {
     map_z_value <- function(gene, cluster) {
     if (gene %in% rownames(summarized_tf_scores_df)) {
       z_score = summarized_tf_scores_df[as.character(gene), as.character(cluster)]
