@@ -333,7 +333,7 @@ validate_input_arguments <- function(arguments_list) {
     arguments_list$num_cell_filter <- 0
   }
   if (is.null(arguments_list$reg)) {
-    arguments_list$reg <- load_dorothea_regulon(arguments_list$organism)
+    stop("Please provide a regulon table!")
   } else {
     if (typeof(arguments_list$reg) == "character") {
       arguments_list$reg <- read.csv(arguments_list$reg, header = TRUE)
