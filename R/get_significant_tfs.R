@@ -10,7 +10,7 @@
 #' @param tf_condition_significant condition comparison results
 #' @return A data frame with transcription factor activity scores per cell type
 #' @export
-get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc, tf_condition_significant = NA, condition_comparison = FALSE) {
+get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc, tf_condition_significant = NA, condition_comparison = FALSE, test_type = "t") {
   single_result_path <- paste0(out_path, condition)
   dir.create(single_result_path)
 
@@ -20,7 +20,8 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
 
   seuratobject.markers <- FindAllMarkers(seuratobject, only.pos = TRUE,
                                          min.pct = 0, logfc.threshold = 0,
-                                         verbose = FALSE, slot = "scale.data")
+                                         verbose = FALSE, slot = "scale.data",
+                                         test.use = test_type)
   write.csv(seuratobject.markers, file =
     paste0(single_result_path, '/all_specificmarker_',
            '_', condition, '.csv'))

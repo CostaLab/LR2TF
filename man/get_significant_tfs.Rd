@@ -11,7 +11,8 @@ get_significant_tfs(
   pval,
   log2fc,
   tf_condition_significant = NA,
-  condition_comparison = FALSE
+  condition_comparison = FALSE,
+  test_type = "t"
 )
 }
 \arguments{
