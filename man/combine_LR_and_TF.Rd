@@ -9,7 +9,8 @@ combine_LR_and_TF(
   LR_prediction,
   out_path,
   condition,
-  add_node_type = FALSE
+  add_node_type = FALSE,
+  consider_complexes = FALSE
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ combine_LR_and_TF(
 \item{out_path}{path to save results}
 
 \item{condition}{sample condition of data}
+
+\item{add_node_type}{logical whether to add gene type suffixes to gene names}
+
+\item{consider_complexes}{logical whether to consider receptor complexes in LR predictions}
 }
 \description{
 Description
