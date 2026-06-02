@@ -44,3 +44,5 @@ Thumbs.db
 .Ruserdata
 
 inst/doc
+
+.vscode
