@@ -27,5 +27,5 @@ combine_LR_and_TF(
 \item{consider_complexes}{logical whether to consider receptor complexes in LR predictions}
 }
 \description{
-Description
+Combines ligand-receptor predictions with transcription factor interactions into a CrossTalkeR-compatible network table.
 }

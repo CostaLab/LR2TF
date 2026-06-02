@@ -31,7 +31,7 @@ save_variable_tf_scores <- function(tf_scores, condition, out_path) {
 
 #' Adds gene type to the name of the gene
 #'
-#' Description
+#' Adds ligand, receptor, or transcription factor suffixes to gene names based on their node type.
 #'
 #' @param df dataframe with all interactions
 #' @import dplyr
@@ -55,7 +55,7 @@ add_node_type <- function(df) {
 
 #' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
 #'
-#' Description
+#' Combines ligand-receptor predictions with transcription factor interactions into a CrossTalkeR-compatible network table.
 #'
 #' @param tf_table table with tf interactions
 #' @param LR_prediction path to or dataframe with ligand-receptor interaction prediction

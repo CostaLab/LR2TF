@@ -10,5 +10,5 @@ add_node_type(df)
 \item{df}{dataframe with all interactions}
 }
 \description{
-Description
+Adds ligand, receptor, or transcription factor suffixes to gene names based on their node type.
 }

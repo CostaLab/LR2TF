@@ -1,6 +1,6 @@
 #' Generate cluster and condition heatmap with r effect size only for significant genes
 #'
-#' Description
+#' Computes significant transcription factor changes between condition pairs for each cell type and saves the resulting statistics.
 #'
 #' @param seuratobject Input Seurat Object
 #' @param out_path Output path to save results
@@ -84,7 +84,7 @@ condition_comparison_significant <- function(seuratobject, out_path, comparison_
 
 #' Generate cluster and condition heatmap with r effect size only for significant genes
 #'
-#' Description
+#' Computes significant transcription factor changes between condition pairs using Seurat markers and saves the resulting statistics.
 #'
 #' @param seuratobject Input Seurat Object
 #' @param out_path Output path to save results

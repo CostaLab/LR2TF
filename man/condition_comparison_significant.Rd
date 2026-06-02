@@ -22,5 +22,5 @@ condition_comparison_significant(
 \item{num_cell_filter}{minimum number of cells in each cell type}
 }
 \description{
-Description
+Computes significant transcription factor changes between condition pairs for each cell type and saves the resulting statistics.
 }

@@ -117,7 +117,7 @@ generate_CrossTalkeR_input <-
 
 #' Generate connections in intracellular network
 #'
-#' This function loads the transcription factor activity table/data frame
+#' Loads the transcription factor activity table/data frame
 #' for multiple cell types, and generates a table containing all detected intracellular connections.
 #'
 #' @param tf_activities Data Frame with transcription factor activities by cell type

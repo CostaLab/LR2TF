@@ -32,5 +32,5 @@ get_significant_tfs(
 A data frame with transcription factor activity scores per cell type
 }
 \description{
-Description
+Identifies transcription factors with significant activity changes for a given condition and writes summary tables and heatmaps.
 }

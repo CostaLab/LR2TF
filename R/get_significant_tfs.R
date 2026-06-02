@@ -1,6 +1,6 @@
 #' Analyse transcription factor activities for significant transcription factors
 #'
-#' Description
+#' Identifies transcription factors with significant activity changes for a given condition and writes summary tables and heatmaps.
 #'
 #' @param seuratobject Input Seurat Object
 #' @param condition Experminet condition (e.g. disease, knockout ...)

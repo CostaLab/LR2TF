@@ -22,6 +22,6 @@ generate_intracellular_network(
 A data frame with CrossTalkeR input
 }
 \description{
-This function loads the transcription factor activity table/data frame
+Loads the transcription factor activity table/data frame
 for multiple cell types, and generates a table containing all detected intracellular connections.
 }
