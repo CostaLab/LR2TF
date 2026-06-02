@@ -61,7 +61,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
   tag_mapping$log_fc_tag <- NULL
   tag_mapping[is.na(tag_mapping)] <- "ns"
 
-  tf_scores_df <- GetAssayData(seuratobject, slot = "scale.data",
+  tf_scores_df <- GetAssayData(seuratobject, layer = "scale.data",
                                   assay = "tf_activities") %>%
     data.frame(check.names = F) %>%
     t()
