@@ -1,6 +1,6 @@
 #' Plots transcription factor activities compared between cluster and conditions
 #'
-#' Description
+#' Creates one heatmap per cluster-condition comparison and combines the resulting PDFs into a single report.
 #'
 #' @param tf_activity_tables Table with tf activities
 #' @param out_path Output path to save results
@@ -34,7 +34,6 @@ plot_condition_tf_activities <-
       nm_df_clust <- tapply(nm_df_short$r, list(tf = nm_df_short$tf, CellType = nm_df_short$CellType), mean)
       nm_df_clust <- data.frame(nm_df_clust)
       nm_df_clust <- as.matrix(nm_df_clust)
-      #colnames(tag_mapping) <- colnames(nm_df_clust)
       fh <- function(x) fastcluster::hclust(dist(x))
       p <- Heatmap(nm_df_clust,
         name = "r", cluster_columns = fh, width = ncol(nm_df_clust) * unit(15, "mm"), row_title = "Transcription Factor", column_title = "Cell Type",
@@ -58,7 +57,7 @@ plot_condition_tf_activities <-
 
 #' Plots transcription factor activities compared between cluster and conditions
 #'
-#' Description
+#' Creates compact heatmaps of significant transcription factor activity changes for each cluster-condition comparison and combines the resulting PDFs into a single report.
 #'
 #' @param tf_activity_tables Table with tf activities
 #' @param out_path Output path to save results
@@ -67,7 +66,7 @@ plot_condition_tf_activities <-
 #' @import ggplot2
 #' @import grid
 #' @export
-plot_condition_tf_activities_compressed <-
+plot_condition_tf_activities_compact <-
   function(tf_activity_tables, out_path) {
     tmp_out_path <- paste0(out_path, "/tmp")
     dir.create(tmp_out_path)
@@ -83,7 +82,6 @@ plot_condition_tf_activities_compressed <-
       nm_df_short <- nm_df[c("r", "tf", "CellType")]
       nm_df_clust <- tapply(nm_df_short$r, list(tf = nm_df_short$tf, CellType = nm_df_short$CellType), mean)
       nm_df_clust <- data.frame(nm_df_clust)
-      # nm_df_clust$tf <- rownames(nm_df_clust)
       nm_df_clust <- as.matrix(nm_df_clust)
 
       fh <- function(x) fastcluster::hclust(dist(x))
@@ -107,7 +105,7 @@ plot_condition_tf_activities_compressed <-
 
 #' Plot heatmap of all transcription factor activities
 #'
-#' This function plots a heatmap with the transcription factor activities per
+#' Plots a heatmap with the transcription factor activities per
 #' cell type.
 #'
 #' @param tf_scores data frame with transcription factor activity scores per cell type
@@ -116,7 +114,7 @@ plot_condition_tf_activities_compressed <-
 #' @param out_path Output path to save results
 #' @import dplyr
 #' @import tibble
-#' @import pheatmap
+#' @import ComplexHeatmap
 #' @import tidyr
 #' @import stringr
 #' @export
@@ -172,7 +170,7 @@ plot_tf_activity <-
 
 #' Plot heatmap of all transcription factor activities compressed version
 #'
-#' This function plots a heatmap with the transcription factor activities per
+#' Plots a heatmap with the transcription factor activities per
 #' cell type.
 #'
 #' @param tf_scores data frame with transcription factor activity scores per cell type
@@ -181,11 +179,11 @@ plot_tf_activity <-
 #' @param out_path Output path to save results
 #' @import dplyr
 #' @import tibble
-#' @import pheatmap
+#' @import ComplexHeatmap
 #' @import tidyr
 #' @import stringr
 #' @export
-plot_tf_activity_compressed <-
+plot_tf_activity_compact <-
   function(tf_scores, condition, out_path) {
     plot_width <- ((ncol(tf_scores) * 15) / 25.4) + 5
     plot_height <- ((nrow(tf_scores) * 0.4) / 25.4) + 5
@@ -229,7 +227,7 @@ plot_tf_activity_compressed <-
 #' @param clusters Number of clusters
 #' @import dplyr
 #' @import tibble
-#' @import pheatmap
+#' @import ComplexHeatmap
 #' @import tidyr
 #' @import stringr
 #' @export
@@ -280,6 +278,5 @@ plot_highly_variable_tfs <-
       )
     draw(p)
 
-    # print(viper_hmap)
     dev.off()
   }

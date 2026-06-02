@@ -12,5 +12,5 @@ plot_condition_tf_activities(tf_activity_tables, out_path)
 \item{out_path}{Output path to save results}
 }
 \description{
-Description
+Creates one heatmap per cluster-condition comparison and combines the resulting PDFs into a single report.
 }

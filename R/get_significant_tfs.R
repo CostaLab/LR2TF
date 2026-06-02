@@ -99,7 +99,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
   plot_highly_variable_tfs(summarized_tf_scores, condition,
                            single_result_path, number_of_clusters)
 
-  plot_tf_activity_compressed(filtered_tf_scores_df, condition, single_result_path)
+  plot_tf_activity_compact(filtered_tf_scores_df, condition, single_result_path)
   plot_tf_activity(filtered_tf_scores_df, tag_mapping, condition,
                    single_result_path)
 

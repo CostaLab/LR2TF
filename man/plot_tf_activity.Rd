@@ -16,6 +16,6 @@ plot_tf_activity(tf_scores, tag_mapping, condition, out_path)
 \item{out_path}{Output path to save results}
 }
 \description{
-This function plots a heatmap with the transcription factor activities per
+Plots a heatmap with the transcription factor activities per
 cell type.
 }

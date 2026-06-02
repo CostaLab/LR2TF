@@ -124,7 +124,7 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
     }
     
     plot_condition_tf_activities(compared_significant_tfs, out_path_compared)
-    plot_condition_tf_activities_compressed(compared_significant_tfs, out_path_compared)
+    plot_condition_tf_activities_compact(compared_significant_tfs, out_path_compared)
 
     seuratobject_list <- SplitObject(seuratobject, split.by = arguments_list$condition)
 
