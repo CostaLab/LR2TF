@@ -140,32 +140,6 @@ combine_LR_and_TF <- function(
   return(complete_interactions)
 }
 
-#' Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions
-#'
-#' Description
-#'
-#' @param tf_table table with tf interactions
-#' @param LR_path path to ligand receptor interaction prediction
-#' @param out_path path to save results
-#' @param condition sample condition of data
-#' @import dplyr
-#' @import tibble
-#' @import tidyr
-#' @export
-combine_LR_and_TF_unfiltered <- function(tf_table, LR_path, out_path, condition) {
-  if (!is.data.frame(LR_prediction)) {
-    lr_table <- read.csv(LR_prediction)
-    row.names(lr_table) <- lr_table$X
-    lr_table$X <- NULL
-  } else {
-    lr_table <- LR_prediction
-  }
-
-  complete_interactions <- rbind(tf_table, lr_table)
-  complete_interactions <- add_node_type(complete_interactions)
-
-  write.csv(complete_interactions, paste0(out_path, "CrossTalkeR_input_", condition, ".csv"), row.names = FALSE)
-}
 
 #' Create an empty dataframe with CrossTalkeR input table format
 #'
@@ -249,15 +223,6 @@ add_entry_to_Regulon_dataframe <- function(celltype, Receptor, TF, Target_Gene, 
   return(df)
 }
 
-#' Convert Seurat object to anndata object and save anndata object file
-#'
-#' @param seuratobject Input Seurat Object
-#' @param out_path Output path to save results
-#' @import sceasy
-#' @export
-convert_seurat_to_anndata <- function(seuratobject, out_path) {
-  sceasy::convertFormat(seuratobject, from = "seurat", to = "anndata", outFile = paste0(out_path, "anndata_object.h5ad"))
-}
 
 #' Check arguments passed by User for validity
 #'

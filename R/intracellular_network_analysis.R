@@ -45,9 +45,6 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
 
   Idents(object = seuratobject) <- arguments_list$celltype
   seuratobject[["tf_annotation"]] <- Idents(object = seuratobject)
-  #annotation_df <- data.frame(cell_type = seuratobject@meta.data[[arguments_list$celltype]], row.names = rownames(seuratobject@meta.data))
-  #annotation_df$cell_type <- gsub("_", "-", annotation_df$cell_type)
-  #seuratobject@meta.data$tf_annotation <- annotation_df$cell_type
 
   if (is.na(arguments_list$comparison_list)[[1]]) {
     result_list <- list()
@@ -68,11 +65,6 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
         group.by = "tf_annotation",
         assays = "RNA"
       )
-      # write.csv(seuratobject.averages[["RNA"]], file =
-      #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
-      #          name, '.csv'))
-
-      #colnames(sub_object.averages[["RNA"]]) <- unique(sub_object[[arguments_list$celltype]][[1]])
 
       tf_activity_scores <- get_significant_tfs(sub_object,
         name,
@@ -109,8 +101,8 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
     )
 
     saveRDS(tf, file = paste0(tf_path, "result_TF_object.RDS"))
-    # saveRDS(seuratobject, file = paste0(tf_path, "TF_seurat_object.RDS"))
     return(tf)
+
   } else {
     out_path_compared <- paste0(tf_path, "compared")
     dir.create(out_path_compared)
@@ -189,10 +181,7 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
           group.by = "tf_annotation",
           assays = "RNA"
         )
-        # write.csv(sub_object.averages[["RNA"]], file =
-        #   paste0(arguments_list$out_path, 'average_gene_expression_by_cluster_',
-        #          name, '.csv'))
-        #colnames(sub_object.averages[["RNA"]]) <- unique(sub_object[[arguments_list$celltype]][[1]])
+
         tf_activity_scores <- get_significant_tfs(sub_object,
           name,
           tf_path,
@@ -247,7 +236,6 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
     )
 
     saveRDS(tf, file = paste0(tf_path, "result_TF_object.RDS"))
-    # saveRDS(seuratobject, file = paste0(tf_path, "TF_seurat_object.RDS"))
 
     return(tf)
   }
