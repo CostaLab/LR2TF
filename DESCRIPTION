@@ -1,11 +1,10 @@
-Package: LR2TF
+Package: IntraTalker
 Type: Package
-Title: What the Package Does (Title Case)
+Title: IntraTalker
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Vanessa Klöker
+Maintainer: vanessa.kloeker@gmail.com
+Description: Workflow for differential transcription factor analysis and generation of intracellular signaling networks.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
