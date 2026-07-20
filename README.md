@@ -1,5 +1,4 @@
 # IntraTalker
-=============
 
 This package enables condition- and cell-type-specific analysis of transcription factor activities and generates intracellular signaling Networks. The results can be combined with ligand-receptor predictions and analyzed differentially using CrossTalkeR. 
 
