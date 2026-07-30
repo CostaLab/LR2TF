@@ -3,11 +3,12 @@ Type: Package
 Title: IntraTalker
 Version: 0.1.0
 Author: Vanessa Klöker
-Maintainer: vanessa.kloeker@gmail.com
+Maintainer: Vanessa Klöker <vanessa.kloeker@gmail.com>
 Description: Workflow for differential transcription factor analysis and generation of intracellular signaling networks.
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+LazyDataCompression: xz
 Imports:
     Seurat,
     dplyr,
@@ -20,9 +21,15 @@ Imports:
     tibble,
     tidyr,
     ComplexHeatmap,
-    scran
-Depends: 
-    R (>= 2.10)
+    scran,
+    fastcluster,
+    grDevices,
+    grid,
+    methods,
+    stats,
+    utils
+Depends:
+    R (>= 3.5.0)
 Suggests: 
     knitr,
     rmarkdown

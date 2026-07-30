@@ -27,6 +27,10 @@ get_significant_tfs(
 \item{log2fc}{log fold change value to filter results}
 
 \item{tf_condition_significant}{condition comparison results}
+
+\item{condition_comparison}{Whether the condition comparison results should be used to tag the cluster specific results}
+
+\item{test_type}{Statistical test used for the comparison, one of "binom", "t" or "wilcox"}
 }
 \value{
 A data frame with transcription factor activity scores per cell type

@@ -12,8 +12,6 @@ plot_tf_activity_compact(tf_scores, condition, out_path)
 \item{condition}{Sample condition for file naming(e.g. control, disease ...)}
 
 \item{out_path}{Output path to save results}
-
-\item{tag_mapping}{Labels for heatmap}
 }
 \description{
 Plots a heatmap with the transcription factor activities per

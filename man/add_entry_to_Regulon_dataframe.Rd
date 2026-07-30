@@ -2,10 +2,24 @@
 % Please edit documentation in R/utils.R
 \name{add_entry_to_Regulon_dataframe}
 \alias{add_entry_to_Regulon_dataframe}
-\title{Add entry to a dataframe in the CrossTalkeR input format}
+\title{Add entry to a dataframe in the regulon format}
 \usage{
 add_entry_to_Regulon_dataframe(celltype, Receptor, TF, Target_Gene, TF_Score)
 }
+\arguments{
+\item{celltype}{Cell type the interaction was detected in}
+
+\item{Receptor}{Name of the receptor connected to the transcription factor}
+
+\item{TF}{Name of the transcription factor}
+
+\item{Target_Gene}{Name of the target gene regulated by the transcription factor}
+
+\item{TF_Score}{Activity score of the transcription factor}
+}
+\value{
+A data frame with a single regulon entry
+}
 \description{
-Add entry to a dataframe in the CrossTalkeR input format
+Add entry to a dataframe in the regulon format
 }

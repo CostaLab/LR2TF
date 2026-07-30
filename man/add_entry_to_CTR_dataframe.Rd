@@ -14,6 +14,24 @@ add_entry_to_CTR_dataframe(
   MeanLR
 )
 }
+\arguments{
+\item{source}{Cell type the interaction originates from}
+
+\item{target}{Cell type the interaction points to}
+
+\item{gene_A}{Name of the gene on the source side of the interaction}
+
+\item{gene_B}{Name of the gene on the target side of the interaction}
+
+\item{type_gene_A}{Node type of gene_A (e.g. Ligand, Receptor or Transcription Factor)}
+
+\item{type_gene_B}{Node type of gene_B (e.g. Ligand, Receptor or Transcription Factor)}
+
+\item{MeanLR}{Interaction score of the entry}
+}
+\value{
+A data frame with a single CrossTalkeR input entry
+}
 \description{
 Add entry to a dataframe in the CrossTalkeR input format
 }

@@ -20,6 +20,8 @@ condition_comparison_significant_Seurat(
 \item{comparison_list}{list of wished comparisons}
 
 \item{num_cell_filter}{minimum number of cells in each cell type}
+
+\item{test_type}{Statistical test used for the comparison, one of "binom", "t" or "wilcox"}
 }
 \description{
 Computes significant transcription factor changes between condition pairs using Seurat markers and saves the resulting statistics.

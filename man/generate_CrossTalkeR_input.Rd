@@ -14,11 +14,11 @@ generate_CrossTalkeR_input(
 \arguments{
 \item{tf_activities}{Data Frame with transcription factor activities by cell type}
 
+\item{gene_expression}{Table with average gene expression levels}
+
+\item{regulon}{Regulon used to get the transcription factor activities, with the columns source, target and weight}
+
 \item{organism}{Organism for which the data is being processed}
-
-\item{confidence_level}{Confidence Level for the DoRothEA regulon used to get the transcription factor activities}
-
-\item{gene_activities}{Table with average gene expression levels}
 }
 \value{
 A data frame with CrossTalkeR input
