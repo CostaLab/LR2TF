@@ -175,7 +175,6 @@ plot_tf_activity <-
 #'
 #' @param tf_scores data frame with transcription factor activity scores per cell type
 #' @param condition Sample condition for file naming(e.g. control, disease ...)
-#' @param tag_mapping Labels for heatmap
 #' @param out_path Output path to save results
 #' @import dplyr
 #' @import tibble

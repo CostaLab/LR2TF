@@ -7,8 +7,8 @@
 #' the DoRothEA regulon.
 #'
 #' @param tf_activities Data Frame with transcription factor activities by cell type
-#' @param confidence_level Confidence Level for the DoRothEA regulon used to get the transcription factor activities
-#' @param gene_activities Table with average gene expression levels
+#' @param gene_expression Table with average gene expression levels
+#' @param regulon Regulon used to get the transcription factor activities, with the columns source, target and weight
 #' @param organism Organism for which the data is being processed
 #' @return A data frame with CrossTalkeR input
 #' @import dplyr
@@ -121,8 +121,9 @@ generate_CrossTalkeR_input <-
 #' for multiple cell types, and generates a table containing all detected intracellular connections.
 #'
 #' @param tf_activities Data Frame with transcription factor activities by cell type
-#' @param confidence_level Confidence Level for the DoRothEA regulon used to get the transcription factor activities
-#' @param gene_activities Table with average gene expression levels
+#' @param gene_expression Table with average gene expression levels
+#' @param regulon Regulon used to get the transcription factor activities, with the columns source, target and weight
+#' @param organism Organism for which the data is being processed
 #' @return A data frame with CrossTalkeR input
 #' @import dplyr
 #' @import tibble

@@ -6,8 +6,9 @@
 #' @param out_path Output path to save results
 #' @param comparison_list list of wished comparisons
 #' @param num_cell_filter minimum number of cells in each cell type
+#' @param test_type Statistical test used for the comparison, one of "binom", "t" or "wilcox"
 #' @import glue
-#' @import maditr
+#' @importFrom maditr dcast
 #' @import Seurat
 #' @import scran
 #' @import rcompanion
@@ -90,8 +91,9 @@ condition_comparison_significant <- function(seuratobject, out_path, comparison_
 #' @param out_path Output path to save results
 #' @param comparison_list list of wished comparisons
 #' @param num_cell_filter minimum number of cells in each cell type
+#' @param test_type Statistical test used for the comparison, one of "binom", "t" or "wilcox"
 #' @import glue
-#' @import maditr
+#' @importFrom maditr dcast
 #' @import Seurat
 #' @import scran
 #' @import rcompanion

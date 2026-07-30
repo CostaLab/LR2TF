@@ -159,6 +159,14 @@ create_empty_CTR_dataframe <- function() {
 
 #' Add entry to a dataframe in the CrossTalkeR input format
 #'
+#' @param source Cell type the interaction originates from
+#' @param target Cell type the interaction points to
+#' @param gene_A Name of the gene on the source side of the interaction
+#' @param gene_B Name of the gene on the target side of the interaction
+#' @param type_gene_A Node type of gene_A (e.g. Ligand, Receptor or Transcription Factor)
+#' @param type_gene_B Node type of gene_B (e.g. Ligand, Receptor or Transcription Factor)
+#' @param MeanLR Interaction score of the entry
+#' @return A data frame with a single CrossTalkeR input entry
 #' @export
 add_entry_to_CTR_dataframe <- function(source, target, gene_A, gene_B, type_gene_A, type_gene_B, MeanLR) {
   df <-
@@ -199,8 +207,14 @@ create_empty_Regulon_dataframe <- function() {
   return(empty_df)
 }
 
-#' Add entry to a dataframe in the CrossTalkeR input format
+#' Add entry to a dataframe in the regulon format
 #'
+#' @param celltype Cell type the interaction was detected in
+#' @param Receptor Name of the receptor connected to the transcription factor
+#' @param TF Name of the transcription factor
+#' @param Target_Gene Name of the target gene regulated by the transcription factor
+#' @param TF_Score Activity score of the transcription factor
+#' @return A data frame with a single regulon entry
 #' @export
 add_entry_to_Regulon_dataframe <- function(celltype, Receptor, TF, Target_Gene, TF_Score) {
   df <-
@@ -271,7 +285,7 @@ validate_input_arguments <- function(arguments_list) {
   if (is.null(arguments_list$plot)) {
     arguments_list$plot <- TRUE
   } else {
-    if (!is.boolean(arguments_list$plot)) {
+    if (!is.logical(arguments_list$plot)) {
       stop("Plot argument must be a boolean value!")
     }
   }

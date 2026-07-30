@@ -8,6 +8,8 @@
 #' @param pval p-value to filter results
 #' @param log2fc log fold change value to filter results
 #' @param tf_condition_significant condition comparison results
+#' @param condition_comparison Whether the condition comparison results should be used to tag the cluster specific results
+#' @param test_type Statistical test used for the comparison, one of "binom", "t" or "wilcox"
 #' @return A data frame with transcription factor activity scores per cell type
 #' @export
 get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc, tf_condition_significant = NA, condition_comparison = FALSE, test_type = "t") {
