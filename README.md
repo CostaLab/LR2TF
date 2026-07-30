@@ -16,7 +16,24 @@ receptors, the framework performs in silico receptor perturbation.
 
 ## Install
 
-Install the package from GitHub with devtools:
+IntraTalker depends on two Bioconductor packages, which are not available from
+CRAN and therefore have to be installed with `BiocManager`:
+
+| Package | Used for |
+| --- | --- |
+| [ComplexHeatmap](https://bioconductor.org/packages/ComplexHeatmap) | Heatmaps of transcription factor activities |
+| [scran](https://bioconductor.org/packages/scran) | Marker detection in the differential transcription factor analysis |
+
+```r
+# Install BiocManager if necessary
+install.packages("BiocManager")
+
+BiocManager::install(c("ComplexHeatmap", "scran"))
+```
+
+All remaining dependencies are on CRAN and are installed automatically.
+
+Then install the package from GitHub with devtools:
 
 ```r
 # Install devtools if necessary
@@ -35,3 +52,9 @@ install.packages("remotes")
 # Install the package
 remotes::install_github("CostaLab/IntraTalker")
 ```
+
+Both installers read the `biocViews` field in `DESCRIPTION` and add the
+Bioconductor repositories automatically, so they can also resolve
+`ComplexHeatmap` and `scran` on their own. Installing them up front with
+`BiocManager` is the more reliable route, as it pins them to the Bioconductor
+release matching your R version.
