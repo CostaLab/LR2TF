@@ -19,7 +19,7 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
 
   Idents(object = seuratobject) <- arguments_list$celltype
   dir.create(arguments_list$out_path)
-  tf_path <- paste0(arguments_list$out_path, "TF_results/")
+  tf_path <- file.path(arguments_list$out_path, "TF_results")
   dir.create(tf_path)
 
   if (!is.na(tf_activities)[[1]]) {
@@ -100,11 +100,11 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       intracellular_network_cluster = intranet_cluster_list
     )
 
-    saveRDS(tf, file = paste0(tf_path, "result_TF_object.RDS"))
+    saveRDS(tf, file = file.path(tf_path, "result_TF_object.RDS"))
     return(tf)
 
   } else {
-    out_path_compared <- paste0(tf_path, "compared")
+    out_path_compared <- file.path(tf_path, "compared")
     dir.create(out_path_compared)
 
     if(arguments_list$Seurat) {
@@ -235,7 +235,7 @@ IntraTalker_analysis <- function(seuratobject, tf_activities = NA, arguments_lis
       intracellular_network_cluster = intranet_cluster_list
     )
 
-    saveRDS(tf, file = paste0(tf_path, "result_TF_object.RDS"))
+    saveRDS(tf, file = file.path(tf_path, "result_TF_object.RDS"))
 
     return(tf)
   }

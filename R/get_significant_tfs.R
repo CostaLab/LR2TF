@@ -13,7 +13,7 @@
 #' @return A data frame with transcription factor activity scores per cell type
 #' @export
 get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc, tf_condition_significant = NA, condition_comparison = FALSE, test_type = "t") {
-  single_result_path <- paste0(out_path, condition)
+  single_result_path <- file.path(out_path, condition)
   dir.create(single_result_path)
 
   Idents(object = seuratobject) <- "tf_annotation"
@@ -25,8 +25,8 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
                                          verbose = FALSE, slot = "scale.data",
                                          test.use = test_type)
   write.csv(seuratobject.markers, file =
-    paste0(single_result_path, '/all_specificmarker_',
-           '_', condition, '.csv'))
+    file.path(single_result_path,
+              paste0('all_specificmarker__', condition, '.csv')))
 
   seuratobject.markers$tag <- sapply(seuratobject.markers$p_val_adj, function(pval) {
     if (pval < 0.001) {
@@ -89,11 +89,11 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
     data.frame(row.names = 1, check.names = FALSE)
 
   summarized_tf_scores_df <- t(summarized_tf_scores_df)
-  write.csv(summarized_tf_scores_df, file = paste0(single_result_path, '/unfiltered_tf_scores', '_', condition, '.csv'))
+  write.csv(summarized_tf_scores_df, file = file.path(single_result_path, paste0('unfiltered_tf_scores_', condition, '.csv')))
 
   col.num <- which(rownames(summarized_tf_scores_df) %in% rownames(tag_mapping))
   filtered_tf_scores_df <- as.data.frame(summarized_tf_scores_df[sort(c(col.num)), ])
-  write.csv(filtered_tf_scores_df, file = paste0(single_result_path, '/tf_scores', '_', condition, '.csv'))
+  write.csv(filtered_tf_scores_df, file = file.path(single_result_path, paste0('tf_scores_', condition, '.csv')))
 
   tf_scores_variable_table <- save_variable_tf_scores(summarized_tf_scores, condition, single_result_path)
 
@@ -121,7 +121,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
   seuratobject.markers <- seuratobject.markers[!(seuratobject.markers$tag == "ns"),]
   seuratobject.markers <- na.omit(seuratobject.markers)
   res[["cluster"]] <- seuratobject.markers[c("gene", "tag", "cluster", "z_score")]
-  write.csv(res[["cluster"]], file = paste0(single_result_path, '/significant_cluster_tf_results', '_', condition, '.csv'))
+  write.csv(res[["cluster"]], file = file.path(single_result_path, paste0('significant_cluster_tf_results_', condition, '.csv')))
 
   if(condition_comparison) {
     map_z_value <- function(gene, cluster) {
@@ -137,7 +137,7 @@ get_significant_tfs <- function(seuratobject, condition, out_path, pval, log2fc,
     tf_condition_significant$z_score <- mapply(map_z_value, tf_condition_significant$gene, tf_condition_significant$cluster)
     tf_condition_significant <- na.omit(tf_condition_significant)
     res[["condition"]] <- tf_condition_significant
-    write.csv(res[["condition"]], file = paste0(single_result_path, '/significant_condition_tf_results', '_', condition, '.csv'))
+    write.csv(res[["condition"]], file = file.path(single_result_path, paste0('significant_condition_tf_results_', condition, '.csv')))
   }
   return(res)
 }

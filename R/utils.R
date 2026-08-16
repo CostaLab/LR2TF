@@ -24,7 +24,7 @@ save_variable_tf_scores <- function(tf_scores, condition, out_path) {
     spread(tf, avg) %>%
     data.frame(row.names = 1, check.names = FALSE)
   tf_scores <- t(summarized_viper_scores_df_all)
-  write.csv(tf_scores, file = paste0(out_path, "/variable_tf_scores", "_", condition, ".csv"))
+  write.csv(tf_scores, file = file.path(out_path, paste0("variable_tf_scores_", condition, ".csv")))
 
   return(tf_scores)
 }
@@ -136,7 +136,7 @@ combine_LR_and_TF <- function(
   if (add_node_type) {
     complete_interactions <- add_node_type(complete_interactions)
   }
-  write.csv(complete_interactions, paste0(out_path, "CrossTalkeR_input_", condition, ".csv"), row.names = FALSE)
+  write.csv(complete_interactions, file.path(out_path, paste0("CrossTalkeR_input_", condition, ".csv")), row.names = FALSE)
   return(complete_interactions)
 }
 
@@ -247,9 +247,7 @@ validate_input_arguments <- function(arguments_list) {
   if (is.null(arguments_list$out_path)) {
     print("Please provide an output path")
   } else {
-    if (substring(arguments_list$out_path, length(arguments_list$out_path) - 1, length(arguments_list$out_path)) != "/") {
-      arguments_list$out_path <- paste0(arguments_list$out_path, "/")
-    }
+    arguments_list$out_path <- sub("/+$", "", arguments_list$out_path)
   }
   if (is.null(arguments_list$celltype)) {
     print("Please provide the name of the metadata field containing cell type annotations")

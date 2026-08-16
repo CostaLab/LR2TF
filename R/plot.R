@@ -11,7 +11,7 @@
 #' @export
 plot_condition_tf_activities <-
   function(tf_activity_tables, out_path) {
-    tmp_out_path <- paste0(out_path, "/tmp")
+    tmp_out_path <- file.path(out_path, "tmp")
     dir.create(tmp_out_path)
 
     for (nm in names(tf_activity_tables)) {
@@ -23,7 +23,7 @@ plot_condition_tf_activities <-
       plot_width <- (((length(unique(nm_df$CellType))) * 15) / 25.4) + 5
       plot_height <- (((length(unique(nm_df$tf))) * 4) / 25.4) + 5
 
-      pdf(paste0(tmp_out_path, "/", chartr(" ", "_", nm), ".pdf"), height = plot_height, width = plot_width)
+      pdf(file.path(tmp_out_path, paste0(chartr(" ", "_", nm), ".pdf")), height = plot_height, width = plot_width)
 
       tag_mapping <- nm_df[c("tf", "tag", "CellType")]
       tag_mapping <- dcast(tag_mapping, tf ~ CellType, value.var = "tag")
@@ -49,7 +49,7 @@ plot_condition_tf_activities <-
     file_list <- list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
     qpdf::pdf_combine(
       input = file_list,
-      output = paste0(out_path, "/cluster_condition_activity_difference.pdf")
+      output = file.path(out_path, "cluster_condition_activity_difference.pdf")
     )
 
     unlink(tmp_out_path, recursive = TRUE)
@@ -68,7 +68,7 @@ plot_condition_tf_activities <-
 #' @export
 plot_condition_tf_activities_compact <-
   function(tf_activity_tables, out_path) {
-    tmp_out_path <- paste0(out_path, "/tmp")
+    tmp_out_path <- file.path(out_path, "tmp")
     dir.create(tmp_out_path)
 
     for (nm in names(tf_activity_tables)) {
@@ -77,7 +77,7 @@ plot_condition_tf_activities_compact <-
       significant_genes <- unique(significant_res$tf)
       nm_df <- filter(nm_df, nm_df$tf %in% significant_genes)
 
-      pdf(paste0(tmp_out_path, "/", chartr(" ", "_", nm), ".pdf"))
+      pdf(file.path(tmp_out_path, paste0(chartr(" ", "_", nm), ".pdf")))
 
       nm_df_short <- nm_df[c("r", "tf", "CellType")]
       nm_df_clust <- tapply(nm_df_short$r, list(tf = nm_df_short$tf, CellType = nm_df_short$CellType), mean)
@@ -96,7 +96,7 @@ plot_condition_tf_activities_compact <-
     file_list <- list.files(path = tmp_out_path, pattern = "*.pdf", full.names = TRUE)
     qpdf::pdf_combine(
       input = file_list,
-      output = paste0(out_path, "/cluster_condition_activity_difference_compressed.pdf")
+      output = file.path(out_path, "cluster_condition_activity_difference_compressed.pdf")
     )
 
     unlink(tmp_out_path, recursive = TRUE)
@@ -140,7 +140,7 @@ plot_tf_activity <-
     rownames(tf_scores) <- gsub(".", "-", rownames(tf_scores), fixed = TRUE)
 
     pdf(
-      file = paste0(out_path, "/tf_activity_", condition, ".pdf"),
+      file = file.path(out_path, paste0("tf_activity_", condition, ".pdf")),
       height = plot_height,
       width = plot_width
     )
@@ -189,7 +189,7 @@ plot_tf_activity_compact <-
 
     tf_scores <- as.matrix(tf_scores)
     pdf(
-      file = paste0(out_path, "/tf_activity_compressed_", condition, ".pdf"),
+      file = file.path(out_path, paste0("tf_activity_compressed_", condition, ".pdf")),
       height = plot_height,
       width = plot_width
     )
@@ -253,9 +253,9 @@ plot_highly_variable_tfs <-
     plot_height <- ((nrow(summarized_scores_df) * 4) / 25.4) + 5
 
     pdf(
-      file = paste0(
+      file = file.path(
         out_path,
-        "/tf_activity_top20_variable_", condition, ".pdf"
+        paste0("tf_activity_top20_variable_", condition, ".pdf")
       ),
       width = plot_width,
       height = plot_height

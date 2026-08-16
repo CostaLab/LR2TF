@@ -74,10 +74,10 @@ condition_comparison_significant <- function(seuratobject, out_path, comparison_
     end_res <- res_df
 
     comparison_df_list[[glue("{cond1} vs {cond2}")]] <- end_res
-    write.csv(res_df, paste0(out_path, "/all_tfs_", glue("{cond1}_vs_{cond2}", ".csv")))
+    write.csv(res_df, file.path(out_path, paste0("all_tfs_", glue("{cond1}_vs_{cond2}", ".csv"))))
   }
 
-  saveRDS(comparison_df_list, file = paste0(out_path, "/comparison_dfs.RDS"))
+  saveRDS(comparison_df_list, file = file.path(out_path, "comparison_dfs.RDS"))
   return(comparison_df_list)
 }
 
@@ -171,9 +171,9 @@ condition_comparison_significant_Seurat <- function(seuratobject, out_path, comp
       end_res$Row.names <- NULL
 
       comparison_df_list[[glue("{cond1} vs {cond2}")]] <- end_res
-      write.csv(res_df, paste0(out_path, "/all_tfs_", glue("{cond1}_vs_{cond2}", ".csv")))
+      write.csv(res_df, file.path(out_path, paste0("all_tfs_", glue("{cond1}_vs_{cond2}", ".csv"))))
     }
     }
-  saveRDS(comparison_df_list, file = paste0(out_path, "/comparison_dfs.RDS"))
+  saveRDS(comparison_df_list, file = file.path(out_path, "comparison_dfs.RDS"))
   return(comparison_df_list)
 }
