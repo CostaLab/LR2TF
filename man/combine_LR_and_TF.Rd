@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{combine_LR_and_TF}
 \alias{combine_LR_and_TF}
-\title{Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions}
+\title{Combining Ligand-Receptor interaction prediction with Transcription Factor interaction predictions with optional receptor complexes}
 \usage{
 combine_LR_and_TF(
   tf_table,
@@ -26,6 +26,13 @@ combine_LR_and_TF(
 
 \item{consider_complexes}{logical whether to consider receptor complexes in LR predictions}
 }
+\value{
+complete_interactions table with all interactions
+}
 \description{
 Combines ligand-receptor predictions with transcription factor interactions into a CrossTalkeR-compatible network table.
+With consider_complexes set to TRUE, receptors reported as a complex in the ligand-receptor predictions are matched
+per subunit and renamed to the complex, so that the intracellular interactions connect to the ligand-receptor interactions.
+Returns the same table as combine_LR_and_TF for consider_complexes = FALSE and the same table as
+combine_LR_and_TF_complexes for consider_complexes = TRUE.
 }
