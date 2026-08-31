@@ -4,7 +4,7 @@ This package enables condition- and cell-type-specific analysis of transcription
 
 To perform receptor perturbation simulation, use the Python package [IntraTalkerpy](https://github.com/CostaLab/IntraTalkerpy)
 
-A **full tutorial** including an example running in R can be found in the IntraTalkerpy documentation: 
+A **full tutorial** including an example running in R can be found in the IntraTalkerpy documentation: <br>
 [Il1rn KO Case Study](https://costalab.github.io/IntraTalkerpy/tutorials/il1rn_bone_marrow/index.html).
 
 ## Abstract
